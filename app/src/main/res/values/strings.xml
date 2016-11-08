@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">快递查询</string>
+    <string name="action_settings">设置</string>
+    <string name="dialog_tips_one">快递单号:</string>
+    <string name="dialog_tips_two">哪家快递:</string>
+    <string name="action_about">关于</string>
+    <string name="add_express_info">添加快递</string>
+</resources>

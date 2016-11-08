@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_add_info"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="16dp"
+    android:orientation="vertical"
+    tools:context="com.jkxy.expressquery.activity.AddInfoActivity">
+    <!--注释内容-->
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/layoutRoot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/start_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:text="快递单号:"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/et_express_number"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="请输入快递单号"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_check"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/start_layout"
+                android:layout_marginTop="30dp"
+                android:background="@color/colorAccent"
+                android:text="检测快递单号" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/end_layout"
+                android:layout_marginBottom="20dp"
+                android:orientation="vertical">
+
+                <RadioGroup
+                    android:id="@+id/checkbox_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/radio_btn_01"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="自动识别"
+                        android:visibility="gone" />
+
+                    <RadioButton
+                        android:id="@+id/radio_btn_02"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="自动识别"
+                        android:visibility="gone" />
+
+                    <RadioButton
+                        android:id="@+id/radio_btn_03"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="自动识别"
+                        android:visibility="gone" />
+
+                    <RadioButton
+                        android:id="@+id/radio_btn_04"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="自动识别"
+                        android:visibility="gone" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/end_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/colorAccent"
+                    android:text="取消" />
+
+                <Button
+                    android:id="@+id/btn_submit"
+                    android:enabled="false"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_bg"
+                    android:text="提交" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</LinearLayout>
