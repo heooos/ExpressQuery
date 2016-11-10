@@ -11,8 +11,9 @@ public class ListInfoBean {
     private String id;  //id
     private String shipperCode;  //快递公司
     private String logisticCode; //物流单号
-    private String data;  //添加时间
+    private String date;  //添加时间
     private int shipperIcon;       //快递公司图标
+    private String orderCode;     //订单编号
     private String customRemark;    //备注
     private String state;           //状态
     private String infoTableName;  //详细信息表名
@@ -22,8 +23,12 @@ public class ListInfoBean {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 
     public String getInfoTableName() {
@@ -50,12 +55,12 @@ public class ListInfoBean {
         this.logisticCode = logisticCode;
     }
 
-    public String getData() {
-        return data;
+    public String getDate() {
+        return date;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public int getShipperIcon() {

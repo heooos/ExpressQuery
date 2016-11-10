@@ -1,5 +1,7 @@
 package com.jkxy.expressquery.utils;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,13 +43,13 @@ public class GetExpressInfo {
     }
 
     public String queryInfo(String code, String number) throws UnsupportedEncodingException {
-        String result = null;
+        String result = "";
         try {
             result = getOrderTracesByJson(code, number);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.print(result);
+        Log.d("GetExpressInfo",result);
         return result;
     }
 

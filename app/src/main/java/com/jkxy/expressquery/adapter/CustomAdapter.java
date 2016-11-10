@@ -37,17 +37,17 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
 //        holder.mTv.setText();
-        holder.mTvNumber.setText("快递单号:"+mData.get(position).getNumber());
-        holder.mTvTag.setText("备注:"+mData.get(position).getTag());
-        holder.mTvTime.setText("添加时间:"+mData.get(position).getTime());
+        holder.mTvNumber.setText("快递单号:"+mData.get(position).getLogisticCode());
+        holder.mTvTag.setText("备注:"+mData.get(position).getCustomRemark());
+        holder.mTvTime.setText("添加时间:"+mData.get(position).getDate());
         holder.mImg.setImageResource(R.drawable.sf);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (itemClickListener != null){
-                    itemClickListener.onItemClick(holder.itemView,holder.getLayoutPosition());
+                    itemClickListener.onItemClick(mData.get(position),holder.itemView,holder.getLayoutPosition());
                 }
             }
         });
@@ -64,7 +64,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     public interface onRecyclerViewItemClickListener {
-        void onItemClick(View v,int position);
+        void onItemClick(ListInfoBean bean,View v,int position);
     }
 
 

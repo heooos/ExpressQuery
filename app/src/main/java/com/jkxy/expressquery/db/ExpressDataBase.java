@@ -10,8 +10,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ExpressDataBase extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "EXPRESS_DB_LIST";
-    public static final String TABLE_NAME = "expressDB.db";
+    public static final String DATABASE_NAME = "EXPRESS_DB_LIST.db";
+    public static final String TABLE_NAME = "expressDB";
 
     public ExpressDataBase(Context context) {
         super(context, DATABASE_NAME, null, 1);

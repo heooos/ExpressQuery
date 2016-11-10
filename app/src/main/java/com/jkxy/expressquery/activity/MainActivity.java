@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import android.view.animation.DecelerateInterpolator;
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.CustomAdapter;
 import com.jkxy.expressquery.bean.ListInfoBean;
+import com.jkxy.expressquery.db.DBUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mFab.setOnClickListener(this);
         mAdapter.setOnItemClickListener(new CustomAdapter.onRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
+            public void onItemClick(ListInfoBean bean, View v, int position) {
                 // TODO: 16/9/20 RecyclerView点击事件
                 //Toast.makeText(MainActivity.this, "" + (position) + ":" + mDatas.get(position), Toast.LENGTH_SHORT).show();
                 // TODO: 2016/11/8 数据获取
@@ -103,12 +105,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void initData() {
         mDatas = new ArrayList<>();
-        // TODO: 2016/10/18 数据初始化
+     // TODO: 2016/10/18 数据初始化
 
-        for (int i = 0; i < 20; i++) {
-            ListInfoBean infoBean = new ListInfoBean("SF", "123456789", "2016-09-24", 0, "袜子");
+        for (int i = 0; i < 1; i++) {
+            ListInfoBean infoBean = new ListInfoBean();
+            infoBean.setDate("2016-11-09");
+            infoBean.setCustomRemark("鞋子");
+            infoBean.setOrderCode("0000");
+            infoBean.setInfoTableName("鞋子物流信息");
+            infoBean.setLogisticCode("888888888888");
+            infoBean.setShipperCode("SF");
+            infoBean.setShipperIcon(0);
+            infoBean.setState("3");
             mDatas.add(infoBean);
+            long id =  DBUtils.addExpressToDb(this,"2016-11-09","鞋子","0000","SF","8888888888","3","xz0000");
+            Log.d("插入数据操作",id+">>>>>>>>");
         }
+     //   mDatas = DBUtils.getAllExpress(this);
 
     }
 
