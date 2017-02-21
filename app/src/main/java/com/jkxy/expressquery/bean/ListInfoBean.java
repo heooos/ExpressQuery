@@ -11,11 +11,11 @@ public class ListInfoBean {
     private String id;  //id
     private String shipperCode;  //快递公司
     private String logisticCode; //物流单号
-    private String date;  //添加时间
+    private String date;        //添加时间
     private int shipperIcon;       //快递公司图标
-    private String orderCode;     //订单编号
+    private String orderCode;     //订单编号 一般为""
     private String customRemark;    //备注
-    private String state;           //状态
+    private String state;           //状态 物流状态: 2-在途中，3-签收,4-问题件
     private String infoTableName;  //详细信息表名
 
 

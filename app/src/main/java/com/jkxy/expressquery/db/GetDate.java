@@ -6,9 +6,10 @@ import java.util.Locale;
 
 /**
  * Created by zh on 2016/11/9.
+ * 获取时间
  */
 
-public class GetData {
+public class GetDate {
     public static String getTime() {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy年MM月DD日  HH:mm:ss", Locale.CHINA);
         Date date = new Date();

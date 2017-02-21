@@ -15,9 +15,9 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.jkxy.expressquery.utils.ExpressNumberCheck;
-import com.jkxy.expressquery.bean.ExpressNumberCheckBean;
 import com.jkxy.expressquery.R;
+import com.jkxy.expressquery.bean.ExpressNumberCheckBean;
+import com.jkxy.expressquery.utils.ExpressNumberCheck;
 import com.jkxy.expressquery.utils.RegularUtils;
 
 public class AddInfoActivity extends AppCompatActivity implements View.OnClickListener {
@@ -68,7 +68,7 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
                     Intent intent = new Intent(this,DetailInfoActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("code",code);
-                    bundle.putString("number",number);
+                    bundle.putString("number", number);
                     bundle.putBoolean("flag",true);
                     intent.putExtras(bundle);
                     Toast.makeText(this,code,Toast.LENGTH_SHORT).show();

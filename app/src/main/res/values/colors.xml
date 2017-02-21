@@ -7,4 +7,7 @@
     <color name="normal">#ffffff</color>
     <color name="btn_enable">#2eb125</color>
     <color name="btn_disable">#90b3a7</color>
+
+    <color name="textview_now">#f72a34</color>
+    <color name="textview_normal">#a19e9f</color>
 </resources>

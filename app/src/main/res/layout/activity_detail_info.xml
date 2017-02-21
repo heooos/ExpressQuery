@@ -7,13 +7,27 @@
     tools:context="com.jkxy.expressquery.activity.DetailInfoActivity">
 
     <ImageView
-        android:layout_marginTop="50dp"
-        android:layout_centerHorizontal="true"
         android:id="@+id/logo"
-        android:transitionName="test"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/sf"
         android:layout_width="70dp"
-        android:layout_height="70dp" />
+        android:layout_height="70dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/sf"
+        android:transitionName="test" />
 
+    <TextView
+        android:id="@+id/split_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/logo"
+        android:layout_marginTop="50dp"
+        android:background="#000" />
+
+    <ListView
+        android:id="@+id/detail_list"
+        android:divider="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/split_line" />
 </RelativeLayout>

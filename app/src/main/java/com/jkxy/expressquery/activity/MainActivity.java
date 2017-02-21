@@ -43,12 +43,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         initViews();
+        mDatas = new ArrayList<>(); //实例化数据源
         initData();
-
-
         mAdapter = new CustomAdapter(this, mDatas);
-        mRecyclerView.setAdapter(mAdapter);
 
+        mRecyclerView.setAdapter(mAdapter);
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -62,24 +61,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(ListInfoBean bean, View v, int position) {
                 // TODO: 16/9/20 RecyclerView点击事件
-                //Toast.makeText(MainActivity.this, "" + (position) + ":" + mDatas.get(position), Toast.LENGTH_SHORT).show();
                 // TODO: 2016/11/8 数据获取
                 Bundle bundle = new Bundle();
-                transitionToActivity(DetailInfoActivity.class, v.findViewById(R.id.img_logo));
+                bundle.putString("state",bean.getState());
+                bundle.putString("code", bean.getShipperCode());
+                bundle.putString("number", bean.getLogisticCode());
+                bundle.putBoolean("flag", false);
+                //传递 code number flag到详情页
+                //code 快递代号  number 快递号   flag 标志
+                transitionToActivity(DetailInfoActivity.class, bundle, v.findViewById(R.id.img_logo));
             }
         });
     }
 
-    private void transitionToActivity(Class target, View view) {
+    private void transitionToActivity(Class target, Bundle bundle, View view) {
 
         final Pair[] pairs = createSafeTransitionParticipants(this, false, view);
-        beginActivity(target, pairs);
+        beginActivity(target, bundle, pairs);
     }
 
-    private void beginActivity(Class target, Pair[] pairs) {
+    private void beginActivity(Class target, Bundle bundle, Pair[] pairs) {
 
         Intent i = new Intent(MainActivity.this, target);
-
+        i.putExtras(bundle);
         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pairs);
         startActivity(i, transitionActivityOptions.toBundle());
 
@@ -104,25 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 数据源初始化
      */
     private void initData() {
-        mDatas = new ArrayList<>();
-     // TODO: 2016/10/18 数据初始化
-
-        for (int i = 0; i < 1; i++) {
-            ListInfoBean infoBean = new ListInfoBean();
-            infoBean.setDate("2016-11-09");
-            infoBean.setCustomRemark("鞋子");
-            infoBean.setOrderCode("0000");
-            infoBean.setInfoTableName("鞋子物流信息");
-            infoBean.setLogisticCode("888888888888");
-            infoBean.setShipperCode("SF");
-            infoBean.setShipperIcon(0);
-            infoBean.setState("3");
-            mDatas.add(infoBean);
-            long id =  DBUtils.addExpressToDb(this,"2016-11-09","鞋子","0000","SF","8888888888","3","xz0000");
-            Log.d("插入数据操作",id+">>>>>>>>");
-        }
-     //   mDatas = DBUtils.getAllExpress(this);
-
+        mDatas = DBUtils.getAllExpress(this);
     }
 
     /**
@@ -174,4 +160,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().setExitTransition(slideTransition);
     }
 
+    @Override
+    protected void onResume() {
+        initData();
+        Log.d("MainActivity", "onResume()");
+        mAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
 }

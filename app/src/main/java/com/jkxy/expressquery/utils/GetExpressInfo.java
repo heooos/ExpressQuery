@@ -42,6 +42,13 @@ public class GetExpressInfo {
     public GetExpressInfo() {
     }
 
+    /**
+     *
+     * @param code  快递公司代号
+     * @param number  快递单号
+     * @return  返回快递信息(Json格式)
+     * @throws UnsupportedEncodingException
+     */
     public String queryInfo(String code, String number) throws UnsupportedEncodingException {
         String result = "";
         try {
@@ -64,11 +71,9 @@ public class GetExpressInfo {
         params.put("DataSign", urlEncoder(dataSign, "UTF-8"));
         params.put("DataType", "2");
 
-        String result = sendPost(ReqURL, params);
-
         //根据公司业务处理返回的信息......
 
-        return result;
+        return sendPost(ReqURL, params);
     }
 
     private String encrypt (String content, String keyValue, String charset) throws Exception {
