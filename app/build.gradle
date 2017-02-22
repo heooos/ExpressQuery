@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:recyclerview-v7:25.1.0'
     compile 'com.google.code.gson:gson:2.7'
+    compile 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.2.1'
 }

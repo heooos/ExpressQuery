@@ -177,6 +177,13 @@ public class DBUtils {
         return count;
     }
 
+    /**
+     * 查询所有数据
+     *
+     * @param context
+     * @param tableName
+     * @return
+     */
     public static List<DetailInfoBean> queryData(Context context, String tableName) {
         mDataBase = getExpressDataBase(context);
         SQLiteDatabase readableDatabase = mDataBase.getReadableDatabase();
@@ -184,18 +191,13 @@ public class DBUtils {
         List<DetailInfoBean> beanList = new ArrayList<>();
         while (cursor.moveToNext()) {
             String date = cursor.getString(cursor.getColumnIndex("AcceptTime"));
-            String station = cursor.getString(cursor.getColumnIndex("AcceptStation"));
             String yearMonthDay = DateUtils.getYearMonthDay(date);
-            String time = DateUtils.getTime(date);
             String week = DateUtils.getWeek(date);
-            DetailInfoBean bean = new DetailInfoBean();
-            bean.setDateYearMonthDay(yearMonthDay);
-            bean.setDateTime(time);
-            bean.setDateWeek(week);
-            bean.setInfo(station);
+            String time = DateUtils.getTime(date);
+            String info = cursor.getString(cursor.getColumnIndex("AcceptStation"));
+            DetailInfoBean bean = new DetailInfoBean(yearMonthDay, week, time, info);
             beanList.add(bean);
         }
-
         cursor.close();
         return beanList;
     }

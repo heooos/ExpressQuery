@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.jkxy.expressquery.R;
@@ -21,6 +22,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     private List<ListInfoBean> mData;
     private LayoutInflater mInflater;
     private onRecyclerViewItemClickListener itemClickListener = null;
+
 
     public CustomAdapter(Context context, List<ListInfoBean> datas) {
         this.mData = datas;
@@ -38,19 +40,20 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-//        holder.mTv.setText();
-        holder.mTvNumber.setText("快递单号:"+mData.get(position).getLogisticCode());
-        holder.mTvTag.setText("备注:"+mData.get(position).getCustomRemark());
-        holder.mTvTime.setText("添加时间:"+mData.get(position).getDate());
+
+        holder.mTvNumber.setText(mData.get(position).getLogisticCode());
+        holder.mTvTag.setText("备注:" + mData.get(position).getCustomRemark());
+        holder.mTvTime.setText("添加时间:" + mData.get(position).getDate());
         holder.mImg.setImageResource(R.drawable.sf);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.content.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (itemClickListener != null){
-                    itemClickListener.onItemClick(mData.get(position),holder.itemView,holder.getLayoutPosition());
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(mData.get(position), holder.itemView, holder.getLayoutPosition());
                 }
             }
         });
+
     }
 
     @Override
@@ -64,7 +67,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     public interface onRecyclerViewItemClickListener {
-        void onItemClick(ListInfoBean bean,View v,int position);
+        void onItemClick(ListInfoBean bean, View v, int position);
     }
 
 
@@ -74,17 +77,17 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         TextView mTvTag;
         TextView mTvTime;
         ImageView mImg;
+        LinearLayout content;
 
         MyViewHolder(View itemView) {
             super(itemView);
-
+            content = (LinearLayout) itemView.findViewById(R.id.content);
             mTvNumber = (TextView) itemView.findViewById(R.id.tv_show);
             mTvTag = (TextView) itemView.findViewById(R.id.tv_tag);
             mTvTime = (TextView) itemView.findViewById(R.id.tv_time);
             mImg = (ImageView) itemView.findViewById(R.id.img_logo);
         }
     }
-
 
 
 }

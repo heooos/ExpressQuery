@@ -68,6 +68,7 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
                     Intent intent = new Intent(this,DetailInfoActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("code",code);
+                    bundle.putString("customRemark"," ");
                     bundle.putString("number", number);
                     bundle.putBoolean("flag",true);
                     intent.putExtras(bundle);

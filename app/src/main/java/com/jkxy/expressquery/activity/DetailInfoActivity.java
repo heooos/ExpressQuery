@@ -1,5 +1,7 @@
 package com.jkxy.expressquery.activity;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,43 +9,72 @@ import android.transition.ArcMotion;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.util.Log;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.ExpandableListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.jkxy.expressquery.R;
-import com.jkxy.expressquery.adapter.DetailInfoAdapter;
+import com.jkxy.expressquery.adapter.DetailInfoListAdapter;
 import com.jkxy.expressquery.bean.DetailInfoBean;
+import com.jkxy.expressquery.bean.DetailInfoChildBean;
+import com.jkxy.expressquery.bean.DetailInfoGroupBean;
+import com.jkxy.expressquery.bean.HeadViewInfoBean;
 import com.jkxy.expressquery.bean.JsonRootBean;
 import com.jkxy.expressquery.db.DBUtils;
 import com.jkxy.expressquery.db.GetDate;
 import com.jkxy.expressquery.utils.DateUtils;
 import com.jkxy.expressquery.utils.GetExpressInfo;
+import com.jkxy.expressquery.utils.RegularUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DetailInfoActivity extends AppCompatActivity {
 
     private String code;
     private String number;
-    private boolean flag;  //true-- 来自添加   false -- 来自主界面
-    private ListView mList;
+    private String customRemark;
     private String state;
-    private DetailInfoAdapter adapter;
+    private boolean flag;  //true-- 来自添加   false -- 来自主界面
+
+    private ExpandableListView mList;
+    private DetailInfoListAdapter adapter;
+
     private String eachExpressName;
+    private TextView tvOrderCode;
+    private TextView tvCustomRemark;
+    private TextView tvState;
+    private TextView tvSenderPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_info);
         initData();
+        initView();
         setUpWindowTransition();
-        mList = (ListView) findViewById(R.id.detail_list);
+
         if (flag) {
+            Log.d("进入查询", "查询");
             new AsyncGetInfo().execute(code, number);
         }
-        Log.d("进入查询", "查询");
+
+    }
+
+    /**
+     * 初始化布局文件
+     */
+    private void initView() {
+        tvOrderCode = (TextView) findViewById(R.id.order_code);
+        tvCustomRemark = (TextView) findViewById(R.id.custom_remark);
+        tvState = (TextView) findViewById(R.id.state);
+        tvSenderPhone = (TextView) findViewById(R.id.sender_phone);
+        mList = (ExpandableListView) findViewById(R.id.detail_list);
     }
 
     private void setUpWindowTransition() {
@@ -59,12 +90,68 @@ public class DetailInfoActivity extends AppCompatActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
                 Log.d("onTransitionEnd", "动画执行完毕");
-                if (getIntent().getExtras().getString("state").equals("2")) {
+                if (state.equals("2")) {
                     new AsyncGetInfo().execute(code, number);
                 } else {
-                    Log.d("直接加载","直接加载");
-                    showList(DBUtils.queryData(DetailInfoActivity.this, eachExpressName));
+                    Log.d("直接加载", "直接加载");
+                    String phoneNumber = "";
+                    List<DetailInfoBean> list = DBUtils.queryData(DetailInfoActivity.this, eachExpressName);
+                    List<DetailInfoGroupBean> groupList = new ArrayList<>();
+                    Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new HashMap<>();
+                    for (int i = 0; i < list.size(); i++) {
+                        String dateYearMonthDay = list.get(i).getDateYearMonthDay();
+                        String dateWeek = list.get(i).getDateWeek();
+                        DetailInfoGroupBean bean;
+                        if (groupList.size() > 0) {
+                            if (!groupList.get(groupList.size() - 1).getDateYearMonthDay().equals(dateYearMonthDay)) {
+                                bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+                                groupList.add(bean);
+                            }
+                        } else {
+                            bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+                            groupList.add(bean);
+                        }
+                        if (i >= (list.size() - 2)) {
+                            String info = list.get(i).getInfo();
+                            String temp = RegularUtils.parsePhoneNumber(info).trim();
+                            if (!temp.equals("")) {
+                                phoneNumber = temp;
+                            }
+                        }
+                    }
+                    System.out.println("键数量为:" + groupList.size());
+                    for (int i = 0; i < groupList.size(); i++) {
+                        List<DetailInfoChildBean> childBeanList = new ArrayList<>();
+                        DetailInfoGroupBean bean = groupList.get(i);
+                        for (DetailInfoBean l : list) {
+
+                            if (groupList.get(i)
+                                    .getDateYearMonthDay()
+                                    .equals(l.getDateYearMonthDay())) {
+                                String dateTime = l.getDateTime();
+                                String info = l.getInfo();
+                                DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
+                                childBeanList.add(childBean);
+                            }
+                            for (DetailInfoChildBean b:
+                                    childBeanList) {
+                                System.out.println("-------"+b.getInfo());
+                            }
+                            Collections.reverse(childBeanList);
+                            for (DetailInfoChildBean b:
+                                    childBeanList) {
+                                System.out.println(b.getInfo()+"-------");
+                            }
+                            dataMap.put(bean, childBeanList);
+                        }
+                    }
+                    HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, phoneNumber);
+
+                    showList(DetailInfoActivity.this, groupList, dataMap);
+                    showDetailInfo(bean);
                 }
+
+
             }
 
             @Override
@@ -94,6 +181,8 @@ public class DetailInfoActivity extends AppCompatActivity {
         code = info.getString("code");
         number = info.getString("number");
         flag = info.getBoolean("flag");
+        customRemark = info.getString("customRemark");
+        state = info.getString("state");
         eachExpressName = "s" + number;
     }
 
@@ -120,6 +209,10 @@ public class DetailInfoActivity extends AppCompatActivity {
             JsonRootBean b = g.fromJson(s, JsonRootBean.class);
             // TODO: 16/9/24 获取到快递信息
             List<JsonRootBean.Traces> traces = b.getTraces();
+            if (traces.size() == 0){
+                Toast.makeText(DetailInfoActivity.this,"未查询到快递信息",Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (flag) {
                 //来自添加界面
                 DBUtils.createEachInfoTable(DetailInfoActivity.this, eachExpressName);
@@ -146,35 +239,85 @@ public class DetailInfoActivity extends AppCompatActivity {
             }
             // TODO: 2017/2/20 两个数据库已经创建好   显示物流信息 
             //在此处 表示程序完成单号的检查以及查询。返回了查询的结果。
-            List<DetailInfoBean> beanList = new ArrayList<>();
+            List<DetailInfoGroupBean> groupList = new ArrayList<>();
+            Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new HashMap<>();
             for (JsonRootBean.Traces m : traces) {
-                String yearMonthDay = DateUtils.getYearMonthDay(m.AcceptTime);
-                String time = DateUtils.getTime(m.AcceptTime);
-                String week = DateUtils.getWeek(m.AcceptTime);
-                DetailInfoBean bean = new DetailInfoBean();
-
-                bean.setDateYearMonthDay(yearMonthDay);
-                bean.setDateTime(time);
-                bean.setDateWeek(week);
-                bean.setInfo(m.AcceptStation);
-
-                beanList.add(bean);
+                String dateYearMonthDay = DateUtils.getYearMonthDay(m.AcceptTime);
+                String dateWeek = DateUtils.getWeek(m.AcceptTime);
+                DetailInfoGroupBean bean;
+                if (groupList.size() > 0) {
+                    if (!groupList.get(groupList.size() - 1).getDateYearMonthDay().equals(dateYearMonthDay)) {
+                        bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+                        groupList.add(bean);
+                    }
+                } else {
+                    bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+                    groupList.add(bean);
+                }
             }
-            showList(beanList);
+            System.out.println("键数量为:" + groupList.size());
+            for (int i = 0; i < groupList.size(); i++) {
+                List<DetailInfoChildBean> childBeanList = new ArrayList<>();
+                DetailInfoGroupBean bean = groupList.get(i);
+                for (JsonRootBean.Traces m : traces) {
+
+                    if (groupList.get(i)
+                            .getDateYearMonthDay()
+                            .equals(DateUtils.getYearMonthDay(m.AcceptTime))) {
+                        String dateTime = DateUtils.getTime(m.AcceptTime);
+                        String info = m.AcceptStation;
+                        DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
+                        childBeanList.add(childBean);
+                    }
+                    Collections.reverse(childBeanList);
+                    dataMap.put(bean, childBeanList);
+                }
+
+            }
+            showList(DetailInfoActivity.this, groupList, dataMap);
             super.onPostExecute(s);
         }
     }
 
     /**
      * 列表加载
-     *
-     * @param beanList
      */
-    private void showList(List<DetailInfoBean> beanList) {
-        Collections.reverse(beanList);
-        adapter = new DetailInfoAdapter(DetailInfoActivity.this, beanList);
+    private void showList(Context context, List<DetailInfoGroupBean> groupList, Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap) {
+        Collections.reverse(groupList);
+        adapter = new DetailInfoListAdapter(context, groupList, dataMap);
         mList.setAdapter(adapter);
-        mList.setItemsCanFocus(false);
+        int groupCount = mList.getCount();
+        for (int i = 0; i < groupCount; i++) {
+            mList.expandGroup(i);
+        }
+        ;
+    }
+
+    /**
+     * headView显示具体信息
+     */
+    private void showDetailInfo(HeadViewInfoBean bean) {
+        Log.d("显示头部消息", "头部");
+        tvOrderCode.setText(bean.getOrderCode());
+        if (bean.getCustomRemark().equals("")) {
+            tvCustomRemark.setText("暂无");
+        } else {
+            tvCustomRemark.setText(bean.getCustomRemark());
+
+        }
+        tvState.setText(bean.getState());
+        if (bean.getSenderPhone().equals("")) {
+            tvSenderPhone.setText("暂无");
+        } else {
+            tvSenderPhone.setText(bean.getSenderPhone());
+            tvSenderPhone.setTextColor(Color.BLUE);
+            tvSenderPhone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(DetailInfoActivity.this, ((TextView) v).getText().toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
     }
 }

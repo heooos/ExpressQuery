@@ -63,13 +63,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // TODO: 16/9/20 RecyclerView点击事件
                 // TODO: 2016/11/8 数据获取
                 Bundle bundle = new Bundle();
-                bundle.putString("state",bean.getState());
+                bundle.putString("state", bean.getState());
                 bundle.putString("code", bean.getShipperCode());
+                bundle.putString("customRemark", bean.getCustomRemark());
                 bundle.putString("number", bean.getLogisticCode());
                 bundle.putBoolean("flag", false);
-                //传递 code number flag到详情页
-                //code 快递代号  number 快递号   flag 标志
                 transitionToActivity(DetailInfoActivity.class, bundle, v.findViewById(R.id.img_logo));
+
             }
         });
     }
