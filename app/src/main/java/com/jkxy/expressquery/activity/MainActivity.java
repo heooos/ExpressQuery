@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,9 +43,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         initViews();
         mDatas = new ArrayList<>(); //实例化数据源
-        initData();
         mAdapter = new CustomAdapter(this, mDatas);
-
+        initData();
         mRecyclerView.setAdapter(mAdapter);
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(manager);
@@ -108,7 +106,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 数据源初始化
      */
     private void initData() {
-        mDatas = DBUtils.getAllExpress(this);
+        mDatas.clear();
+        List<ListInfoBean> data = DBUtils.getAllExpress(this);
+        mDatas.addAll(data);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -163,8 +164,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         initData();
-        Log.d("MainActivity", "onResume()");
-        mAdapter.notifyDataSetChanged();
         super.onResume();
     }
 }

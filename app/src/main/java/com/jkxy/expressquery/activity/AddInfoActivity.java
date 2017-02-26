@@ -7,9 +7,11 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -19,8 +21,9 @@ import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.bean.ExpressNumberCheckBean;
 import com.jkxy.expressquery.utils.ExpressNumberCheck;
 import com.jkxy.expressquery.utils.RegularUtils;
+import com.jkxy.expressquery.utils.SelectPicturePopupWindow;
 
-public class AddInfoActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddInfoActivity extends AppCompatActivity implements View.OnClickListener, SelectPicturePopupWindow.OnSelectedListener {
 
     private Button mBtnSubmit, mBtnCheck, mBtnCancel;
     private EditText mEtExpressNumber;
@@ -31,7 +34,9 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
     private RadioButton[] buttons;
     private RadioGroup mGroup;
 
+    private ImageView camera;
 
+    private SelectPicturePopupWindow select;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,9 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         mBtnCheck.setOnClickListener(this);
         mBtnSubmit.setOnClickListener(this);
         mBtnCancel.setOnClickListener(this);
+        camera.setOnClickListener(this);
     }
+
     //初始化组件
     private void initView() {
         buttons = new RadioButton[]{btnOne, btnTwo, btnStree, btnFour};
@@ -56,27 +63,30 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         mBtnCancel = (Button) findViewById(R.id.btn_cancel);
         mEtExpressNumber = (EditText) findViewById(R.id.et_express_number);
         mGroup = (RadioGroup) findViewById(R.id.checkbox_group);
+
+        camera = (ImageView) findViewById(R.id.camera);
+
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_submit:
-                Log.d("提交","提交");
+                Log.d("提交", "提交");
                 String code = RegularUtils.parseExpressCode(((RadioButton) findViewById(mGroup.getCheckedRadioButtonId())).getText().toString());
-                if (code != null){
-                    Intent intent = new Intent(this,DetailInfoActivity.class);
+                if (code != null) {
+                    Intent intent = new Intent(this, DetailInfoActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putString("code",code);
-                    bundle.putString("customRemark"," ");
+                    bundle.putString("code", code);
+                    bundle.putString("customRemark", " ");
                     bundle.putString("number", number);
-                    bundle.putBoolean("flag",true);
+                    bundle.putBoolean("flag", true);
                     intent.putExtras(bundle);
-                    Toast.makeText(this,code,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, code, Toast.LENGTH_SHORT).show();
                     startActivity(intent);
                     finish();
-                }else {
-                    Toast.makeText(this,"查询异常",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "查询异常", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btn_check:
@@ -85,6 +95,35 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.btn_cancel:
                 finish();
+                break;
+            case R.id.camera:
+                select = new SelectPicturePopupWindow(this);
+                select.setOnSelectedListener(this);
+                select.showPopupWindow(this);
+//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.order);
+//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.aaa);
+//                AutoGetNumberUtils.getNumber(bitmap);
+                break;
+
+        }
+    }
+
+    @Override
+    public void OnSelected(View v, int position) {
+        switch (position) {
+            case 0:
+                // TODO: "拍照"按钮被点击了
+                Toast.makeText(this, "拍照按钮被点击了 ", Toast.LENGTH_SHORT).show();
+
+                break;
+            case 1:
+                Toast.makeText(this, "从相册选择按钮被点击了 ", Toast.LENGTH_SHORT).show();
+                // TODO: "从相册选择"按钮被点击了
+                break;
+            case 2:
+                if (select != null) {
+                    select.dismissPopupWindow();
+                }
                 break;
         }
     }
@@ -138,5 +177,19 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
 
             super.onProgressUpdate(values);
         }
+
+
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK && select != null && select.getPopupState()) {
+            select.dismissPopupWindow();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
 }

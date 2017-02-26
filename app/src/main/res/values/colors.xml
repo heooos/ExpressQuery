@@ -10,4 +10,6 @@
 
     <color name="textview_now">#f72a34</color>
     <color name="textview_normal">#a19e9f</color>
+
+    <color name="cancel">#f72a34</color>
 </resources>
