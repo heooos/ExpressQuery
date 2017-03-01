@@ -4,7 +4,7 @@
     android:id="@+id/activity_detail_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#70e776"
+    android:background="#d9f1da"
     tools:context="com.jkxy.expressquery.activity.DetailInfoActivity">
 
     <LinearLayout

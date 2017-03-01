@@ -1,4 +1,4 @@
-package com.jkxy.expressquery.utils;
+package com.jkxy.expressquery.model;
 
 import android.util.Log;
 

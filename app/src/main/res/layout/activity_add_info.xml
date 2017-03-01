@@ -148,16 +148,20 @@
                     android:layout_weight="1"
                     android:background="@color/colorAccent"
                     android:text="取消" />
-
-                <Button
-                    android:id="@+id/btn_submit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                <LinearLayout
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_bg"
-                    android:enabled="false"
-                    android:text="提交" />
+                    android:background="#d9f1da"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:id="@+id/btn_submit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/btn_bg"
+                        android:enabled="false"
+                        android:text="提交" />
+                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
 

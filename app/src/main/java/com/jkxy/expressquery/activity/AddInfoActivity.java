@@ -72,13 +72,13 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_submit:
-                Log.d("提交", "提交");
+                Log.d("提交","提交");
                 String code = RegularUtils.parseExpressCode(((RadioButton) findViewById(mGroup.getCheckedRadioButtonId())).getText().toString());
                 if (code != null) {
                     Intent intent = new Intent(this, DetailInfoActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("code", code);
-                    bundle.putString("customRemark", " ");
+                    bundle.putString("customRemark", "暂无");
                     bundle.putString("number", number);
                     bundle.putBoolean("flag", true);
                     intent.putExtras(bundle);

@@ -74,9 +74,8 @@
 
         </LinearLayout>
 
-
         <Button
-            android:id="@+id/btnTop"
+            android:id="@+id/btnChange"
             android:layout_width="@dimen/swipe_item_button_width"
             android:layout_height="match_parent"
             android:background="#d9dee4"
@@ -84,7 +83,7 @@
             android:textColor="@android:color/black" />
 
         <Button
-            android:id="@+id/btnUnRead"
+            android:id="@+id/btnNotify"
             android:layout_width="@dimen/swipe_item_button_width"
             android:layout_height="match_parent"
             android:background="#ecd50a"

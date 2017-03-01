@@ -202,4 +202,26 @@ public class DBUtils {
         return beanList;
     }
 
+    /**
+     * 从总的数据库中删除单条物流信息
+     *
+     * @param context
+     * @param logisticCode
+     */
+    public static void deleteByLogisticCode(Context context, String logisticCode) {
+
+        DBUtils.deleteEachInfoFromDb(context,"s"+logisticCode);
+        mDataBase = getExpressDataBase(context);
+        SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
+        writableDatabase.delete(EXPRESS_TABLE_NAME, "LogisticCode = ?", new String[]{logisticCode});
+
+    }
+
+    public static void deleteEachInfoFromDb(Context context, String tableName) {
+        mDataBase = getExpressDataBase(context);
+        SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
+        writableDatabase.execSQL("DROP TABLE " + tableName);
+
+    }
+
 }

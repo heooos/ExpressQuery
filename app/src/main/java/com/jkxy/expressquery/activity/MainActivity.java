@@ -17,11 +17,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Toast;
 
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.CustomAdapter;
 import com.jkxy.expressquery.bean.ListInfoBean;
 import com.jkxy.expressquery.db.DBUtils;
+import com.jkxy.expressquery.impl.IOnRecyclerViewItemClickListener;
+import com.jkxy.expressquery.impl.ISwipeMenuClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //不允许截图
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+
         initViews();
         mDatas = new ArrayList<>(); //实例化数据源
         mAdapter = new CustomAdapter(this, mDatas);
@@ -55,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initEvent() {
         mFab.setOnClickListener(this);
-        mAdapter.setOnItemClickListener(new CustomAdapter.onRecyclerViewItemClickListener() {
+        mAdapter.setOnItemClickListener(new IOnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(ListInfoBean bean, View v, int position) {
                 // TODO: 16/9/20 RecyclerView点击事件
@@ -67,9 +72,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 bundle.putString("number", bean.getLogisticCode());
                 bundle.putBoolean("flag", false);
                 transitionToActivity(DetailInfoActivity.class, bundle, v.findViewById(R.id.img_logo));
-
             }
         });
+
+        mAdapter.setOnSwipeMenuClickListener(new ISwipeMenuClickListener() {
+            @Override
+            public void onSwipeMenuClick(ListInfoBean bean, int tag, int position) {
+                switch (tag) {
+                    case 1:
+                        Toast.makeText(MainActivity.this, "修改备注", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 2:
+                        Toast.makeText(MainActivity.this, "添加到状态栏", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 3:
+                        DBUtils.deleteByLogisticCode(MainActivity.this,bean.getLogisticCode());
+                        initData();
+                        break;
+                }
+            }
+        });
+
+
     }
 
     private void transitionToActivity(Class target, Bundle bundle, View view) {

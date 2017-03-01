@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.DetailInfoListAdapter;
+import com.jkxy.expressquery.bean.CacheBean;
 import com.jkxy.expressquery.bean.DetailInfoBean;
 import com.jkxy.expressquery.bean.DetailInfoChildBean;
 import com.jkxy.expressquery.bean.DetailInfoGroupBean;
@@ -24,13 +25,12 @@ import com.jkxy.expressquery.bean.HeadViewInfoBean;
 import com.jkxy.expressquery.bean.JsonRootBean;
 import com.jkxy.expressquery.db.DBUtils;
 import com.jkxy.expressquery.db.GetDate;
+import com.jkxy.expressquery.model.GetDetailDataFromList;
+import com.jkxy.expressquery.model.GetExpressInfo;
 import com.jkxy.expressquery.utils.DateUtils;
-import com.jkxy.expressquery.utils.GetExpressInfo;
-import com.jkxy.expressquery.utils.RegularUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,12 +58,10 @@ public class DetailInfoActivity extends AppCompatActivity {
         initData();
         initView();
         setUpWindowTransition();
-
         if (flag) {
             Log.d("进入查询", "查询");
-            new AsyncGetInfo().execute(code, number);
+            new AsyncGetInfo().execute(code, number); //来自添加界面的数据
         }
-
     }
 
     /**
@@ -77,6 +75,19 @@ public class DetailInfoActivity extends AppCompatActivity {
         mList = (ExpandableListView) findViewById(R.id.detail_list);
     }
 
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        Bundle info = getIntent().getExtras();
+        code = info.getString("code");
+        number = info.getString("number");
+        flag = info.getBoolean("flag");
+        customRemark = info.getString("customRemark");
+        state = info.getString("state");
+        eachExpressName = "s" + number;
+    }
+
     private void setUpWindowTransition() {
 
         final ChangeBounds ts = new ChangeBounds();
@@ -84,71 +95,67 @@ public class DetailInfoActivity extends AppCompatActivity {
         ts.addListener(new Transition.TransitionListener() {
             @Override
             public void onTransitionStart(Transition transition) {
-
             }
 
             @Override
             public void onTransitionEnd(Transition transition) {
                 Log.d("onTransitionEnd", "动画执行完毕");
-                if (state.equals("2")) {
-                    new AsyncGetInfo().execute(code, number);
+                if (flag) {
+                    return;
                 } else {
-                    Log.d("直接加载", "直接加载");
-                    String phoneNumber = "";
-                    List<DetailInfoBean> list = DBUtils.queryData(DetailInfoActivity.this, eachExpressName);
-                    List<DetailInfoGroupBean> groupList = new ArrayList<>();
-                    Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new HashMap<>();
-                    for (int i = 0; i < list.size(); i++) {
-                        String dateYearMonthDay = list.get(i).getDateYearMonthDay();
-                        String dateWeek = list.get(i).getDateWeek();
-                        DetailInfoGroupBean bean;
-                        if (groupList.size() > 0) {
-                            if (!groupList.get(groupList.size() - 1).getDateYearMonthDay().equals(dateYearMonthDay)) {
-                                bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
-                                groupList.add(bean);
-                            }
-                        } else {
-                            bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
-                            groupList.add(bean);
-                        }
-                        if (i >= (list.size() - 2)) {
-                            String info = list.get(i).getInfo();
-                            String temp = RegularUtils.parsePhoneNumber(info).trim();
-                            if (!temp.equals("")) {
-                                phoneNumber = temp;
-                            }
-                        }
+                    // TODO: 2017/3/1 问题件处理
+                    if (state.equals("2")) {
+                        new AsyncGetInfo().execute(code, number);
+                    } else {
+                        Log.d("直接加载", "直接加载");
+                        String phoneNumber = "";
+                        List<DetailInfoBean> list = DBUtils.queryData(DetailInfoActivity.this, eachExpressName);
+//                        List<DetailInfoGroupBean> groupList = new ArrayList<>();
+//                        Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new HashMap<>();
+//                        for (int i = 0; i < list.size(); i++) {
+//                            String dateYearMonthDay = list.get(i).getDateYearMonthDay();
+//                            String dateWeek = list.get(i).getDateWeek();
+//                            DetailInfoGroupBean bean;
+//                            if (groupList.size() > 0) {
+//                                if (!groupList.get(groupList.size() - 1).getDateYearMonthDay().equals(dateYearMonthDay)) {
+//                                    bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+//                                    groupList.add(bean);
+//                                }
+//                            } else {
+//                                bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+//                                groupList.add(bean);
+//                            }
+//                            if (i >= (list.size() - 2)) {
+//                                String info = list.get(i).getInfo();
+//                                String temp = RegularUtils.parsePhoneNumber(info).trim();
+//                                if (!temp.equals("")) {
+//                                    phoneNumber = temp;
+//                                }
+//                            }
+//                        }
+//                        System.out.println("键数量为:" + groupList.size());
+//                        for (int i = 0; i < groupList.size(); i++) {
+//                            List<DetailInfoChildBean> childBeanList = new ArrayList<>();
+//                            DetailInfoGroupBean bean = groupList.get(i);
+//                            for (DetailInfoBean l : list) {
+//
+//                                if (groupList.get(i)
+//                                        .getDateYearMonthDay()
+//                                        .equals(l.getDateYearMonthDay())) {
+//                                    String dateTime = l.getDateTime();
+//                                    String info = l.getInfo();
+//                                    DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
+//                                    childBeanList.add(childBean);
+//                                }
+//                                Collections.reverse(childBeanList);
+//                                dataMap.put(bean, childBeanList);
+//                            }
+//                        }
+                        CacheBean cacheBean = GetDetailDataFromList.getMap(list);
+                        showList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
+                        HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, cacheBean.getPhoneNumber());
+                        showDetailInfo(bean);
                     }
-                    System.out.println("键数量为:" + groupList.size());
-                    for (int i = 0; i < groupList.size(); i++) {
-                        List<DetailInfoChildBean> childBeanList = new ArrayList<>();
-                        DetailInfoGroupBean bean = groupList.get(i);
-                        for (DetailInfoBean l : list) {
-
-                            if (groupList.get(i)
-                                    .getDateYearMonthDay()
-                                    .equals(l.getDateYearMonthDay())) {
-                                String dateTime = l.getDateTime();
-                                String info = l.getInfo();
-                                DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
-                                childBeanList.add(childBean);
-                            }
-                            for (DetailInfoChildBean b:
-                                    childBeanList) {
-                                System.out.println("-------"+b.getInfo());
-                            }
-                            Collections.reverse(childBeanList);
-                            for (DetailInfoChildBean b:
-                                    childBeanList) {
-                                System.out.println(b.getInfo()+"-------");
-                            }
-                            dataMap.put(bean, childBeanList);
-                        }
-                    }
-                    HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, phoneNumber);
-
-                    showList(DetailInfoActivity.this, groupList, dataMap);
-                    showDetailInfo(bean);
                 }
 
 
@@ -173,19 +180,6 @@ public class DetailInfoActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * 初始化数据
-     */
-    private void initData() {
-        Bundle info = getIntent().getExtras();
-        code = info.getString("code");
-        number = info.getString("number");
-        flag = info.getBoolean("flag");
-        customRemark = info.getString("customRemark");
-        state = info.getString("state");
-        eachExpressName = "s" + number;
-    }
-
 
     class AsyncGetInfo extends AsyncTask<String, Integer, String> {
 
@@ -207,10 +201,15 @@ public class DetailInfoActivity extends AppCompatActivity {
             Log.d("onPostExecute", "查询结束");
             Gson g = new Gson();
             JsonRootBean b = g.fromJson(s, JsonRootBean.class);
+
+            state = b.getState();
+
             // TODO: 16/9/24 获取到快递信息
             List<JsonRootBean.Traces> traces = b.getTraces();
-            if (traces.size() == 0){
-                Toast.makeText(DetailInfoActivity.this,"未查询到快递信息",Toast.LENGTH_SHORT).show();
+
+
+            if (traces.size() == 0) {
+                Toast.makeText(DetailInfoActivity.this, "未查询到快递信息", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (flag) {
@@ -237,44 +236,60 @@ public class DetailInfoActivity extends AppCompatActivity {
                     }
                 }
             }
-            // TODO: 2017/2/20 两个数据库已经创建好   显示物流信息 
-            //在此处 表示程序完成单号的检查以及查询。返回了查询的结果。
-            List<DetailInfoGroupBean> groupList = new ArrayList<>();
-            Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new HashMap<>();
+            // TODO: 2017/2/20 两个数据库已经创建好   显示物流信息
+            List<DetailInfoBean> list = new ArrayList<>();
             for (JsonRootBean.Traces m : traces) {
-                String dateYearMonthDay = DateUtils.getYearMonthDay(m.AcceptTime);
-                String dateWeek = DateUtils.getWeek(m.AcceptTime);
-                DetailInfoGroupBean bean;
-                if (groupList.size() > 0) {
-                    if (!groupList.get(groupList.size() - 1).getDateYearMonthDay().equals(dateYearMonthDay)) {
-                        bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
-                        groupList.add(bean);
-                    }
-                } else {
-                    bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
-                    groupList.add(bean);
-                }
+                DetailInfoBean bean = new DetailInfoBean(
+                        DateUtils.getYearMonthDay(m.AcceptTime),
+                        DateUtils.getWeek(m.AcceptTime),
+                        DateUtils.getTime(m.AcceptTime),
+                        m.AcceptStation);
+                list.add(bean);
             }
-            System.out.println("键数量为:" + groupList.size());
-            for (int i = 0; i < groupList.size(); i++) {
-                List<DetailInfoChildBean> childBeanList = new ArrayList<>();
-                DetailInfoGroupBean bean = groupList.get(i);
-                for (JsonRootBean.Traces m : traces) {
 
-                    if (groupList.get(i)
-                            .getDateYearMonthDay()
-                            .equals(DateUtils.getYearMonthDay(m.AcceptTime))) {
-                        String dateTime = DateUtils.getTime(m.AcceptTime);
-                        String info = m.AcceptStation;
-                        DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
-                        childBeanList.add(childBean);
-                    }
-                    Collections.reverse(childBeanList);
-                    dataMap.put(bean, childBeanList);
-                }
 
-            }
-            showList(DetailInfoActivity.this, groupList, dataMap);
+            //在此处 表示程序完成单号的检查以及查询。返回了查询的结果。
+            CacheBean cacheBean = GetDetailDataFromList.getMap(list);
+//            List<DetailInfoGroupBean> groupList = new ArrayList<>();
+//            Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new HashMap<>();
+//            for (JsonRootBean.Traces m : traces) {
+//                String dateYearMonthDay = DateUtils.getYearMonthDay(m.AcceptTime);
+//                String dateWeek = DateUtils.getWeek(m.AcceptTime);
+//                DetailInfoGroupBean bean;
+//                if (groupList.size() > 0) {
+//                    if (!groupList.get(groupList.size() - 1)
+//                            .getDateYearMonthDay()
+//                            .equals(dateYearMonthDay)) {
+//                        bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+//                        groupList.add(bean);
+//                    }
+//                } else {
+//                    bean = new DetailInfoGroupBean(dateYearMonthDay, dateWeek);
+//                    groupList.add(bean);
+//                }
+//            }
+//            System.out.println("键数量为:" + groupList.size());
+//            for (int i = 0; i < groupList.size(); i++) {
+//                List<DetailInfoChildBean> childBeanList = new ArrayList<>();
+//                DetailInfoGroupBean bean = groupList.get(i);
+//                for (JsonRootBean.Traces m : traces) {
+//                    if (groupList.get(i)
+//                            .getDateYearMonthDay()
+//                            .equals(DateUtils.getYearMonthDay(m.AcceptTime))) {
+//                        String dateTime = DateUtils.getTime(m.AcceptTime);
+//                        String info = m.AcceptStation;
+//                        DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
+//                        childBeanList.add(childBean);
+//                    }
+//
+//                    Collections.reverse(childBeanList);
+//                    dataMap.put(bean, childBeanList);
+//                }
+//
+//            }
+            showList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
+            HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, cacheBean.getPhoneNumber());
+            showDetailInfo(bean);
             super.onPostExecute(s);
         }
     }

@@ -7,7 +7,7 @@
     <LinearLayout
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:paddingLeft="30dp"
+        android:paddingLeft="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -22,7 +22,7 @@
             android:id="@+id/info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="10dp"
             android:maxLines="1"
             android:text="包裹正在等待揽收" />
     </LinearLayout>
