@@ -9,7 +9,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 /**
  * Created by zh on 2017/2/22.
  */
-
+// TODO: 2017/3/3 添加异步处理
 public class AutoGetNumberUtils {
 
     static String PATH = Environment.getExternalStorageDirectory().getPath() + "/tesseract/";
@@ -19,9 +19,7 @@ public class AutoGetNumberUtils {
     static final String DEFAULT_LANGUAGE = "eng";
 
     public static String getNumber(Bitmap bmp) {
-
         Log.d("路径信息", PATH);
-
         final TessBaseAPI baseApi = new TessBaseAPI();
         //初始化OCR的训练数据路径与语言
         baseApi.init(PATH, DEFAULT_LANGUAGE);
@@ -30,11 +28,11 @@ public class AutoGetNumberUtils {
         //设置要识别的图片
         baseApi.setImage(bmp);
         String text = baseApi.getUTF8Text();
-        Log.d("识别的内容",text);
+        Log.d("识别的内容", text);
         baseApi.clear();
         baseApi.end();
 
-        return null;
+        return text;
     }
 
 }

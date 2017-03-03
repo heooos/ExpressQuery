@@ -1,8 +1,12 @@
 package com.jkxy.expressquery.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,11 +21,16 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.jkxy.expressquery.Constants;
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.bean.ExpressNumberCheckBean;
+import com.jkxy.expressquery.utils.AutoGetNumberUtils;
 import com.jkxy.expressquery.utils.ExpressNumberCheck;
 import com.jkxy.expressquery.utils.RegularUtils;
 import com.jkxy.expressquery.utils.SelectPicturePopupWindow;
+
+import java.io.File;
+import java.util.Objects;
 
 public class AddInfoActivity extends AppCompatActivity implements View.OnClickListener, SelectPicturePopupWindow.OnSelectedListener {
 
@@ -72,7 +81,7 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_submit:
-                Log.d("提交","提交");
+                Log.d("提交", "提交");
                 String code = RegularUtils.parseExpressCode(((RadioButton) findViewById(mGroup.getCheckedRadioButtonId())).getText().toString());
                 if (code != null) {
                     Intent intent = new Intent(this, DetailInfoActivity.class);
@@ -100,9 +109,6 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
                 select = new SelectPicturePopupWindow(this);
                 select.setOnSelectedListener(this);
                 select.showPopupWindow(this);
-//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.order);
-//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.aaa);
-//                AutoGetNumberUtils.getNumber(bitmap);
                 break;
 
         }
@@ -112,13 +118,25 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
     public void OnSelected(View v, int position) {
         switch (position) {
             case 0:
-                // TODO: "拍照"按钮被点击了
-                Toast.makeText(this, "拍照按钮被点击了 ", Toast.LENGTH_SHORT).show();
-
+                Intent intent = new Intent();
+                intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                String state = Environment.getExternalStorageState();
+                if (Objects.equals(state, Environment.MEDIA_MOUNTED)) {
+                    File path = Environment.getExternalStorageDirectory();
+                    File file = new File(path, "ss.jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                    startActivityForResult(intent, Constants.REQUEST_ACTION_IMAGE_CAPTURE);
+                } else {
+                    Toast.makeText(AddInfoActivity.this, "存储卡不可用", Toast.LENGTH_SHORT).show();
+                }
+                select.dismissPopupWindow();
                 break;
             case 1:
-                Toast.makeText(this, "从相册选择按钮被点击了 ", Toast.LENGTH_SHORT).show();
-                // TODO: "从相册选择"按钮被点击了
+                Intent getImage = new Intent(Intent.ACTION_GET_CONTENT);
+                getImage.addCategory(Intent.CATEGORY_OPENABLE);
+                getImage.setType("image/*");
+                startActivityForResult(getImage, Constants.REQUEST_ACTION_GET_CONTENT);
+                select.dismissPopupWindow();
                 break;
             case 2:
                 if (select != null) {
@@ -172,13 +190,69 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
             super.onPostExecute(s);
         }
 
-        @Override
-        protected void onProgressUpdate(Integer... values) {
+    }
 
-            super.onProgressUpdate(values);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_CANCELED) {
+            return;
+        }
+        switch (requestCode) {
+            case Constants.REQUEST_ACTION_IMAGE_CAPTURE:
+
+                String state = Environment.getExternalStorageState();
+                if (state.equals(Environment.MEDIA_MOUNTED)) {
+                    File path = Environment
+                            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                    File tempFile = new File(path, "ss.jpg");
+                    startPhotoZoom(Uri.fromFile(tempFile));
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "未找到存储卡，无法存储照片！", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case Constants.REQUEST_ACTION_GET_CONTENT:
+
+                break;
+            case Constants.REQUEST_CROP_CODE:
+                if (data != null) {
+                    getImageToView(data);
+                }
+                break;
         }
 
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.aaa);
+//        AutoGetNumberUtils.getNumber(bitmap);
 
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void getImageToView(Intent data) {
+
+        Bundle extras = data.getExtras();
+        if (extras != null) {
+            Bitmap photo = extras.getParcelable("data");
+//            Drawable drawable = new BitmapDrawable(this.getResources(), photo);
+            String str = AutoGetNumberUtils.getNumber(photo);
+            mEtExpressNumber.setText(str);
+        }
+    }
+
+    private void startPhotoZoom(Uri uri) {
+
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        // 设置裁剪
+        intent.putExtra("crop", "true");
+        // aspectX aspectY 是宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // outputX outputY 是裁剪图片宽高
+        intent.putExtra("outputX", 340);
+        intent.putExtra("outputY", 340);
+        intent.putExtra("return-data", false);
+        startActivityForResult(intent, Constants.REQUEST_CROP_CODE);
     }
 
     @Override
