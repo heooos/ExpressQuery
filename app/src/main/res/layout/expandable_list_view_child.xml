@@ -23,7 +23,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:maxLines="1"
             android:text="包裹正在等待揽收" />
     </LinearLayout>
 

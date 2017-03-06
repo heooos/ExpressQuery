@@ -115,10 +115,15 @@ public class DBUtils {
      *
      * @param context
      */
-    public static void updateExpressToDb(Context context) {
+    public static void updateExpressToDb(Context context, String LogisticCode, String customRemark) {
         mDataBase = getExpressDataBase(context);
         SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
-
+        ContentValues values = new ContentValues();
+        values.put("CustomRemark", customRemark);
+        writableDatabase.update(EXPRESS_TABLE_NAME,
+                values,
+                "LogisticCode = ?",
+                new String[]{LogisticCode});
     }
 
 
@@ -210,7 +215,7 @@ public class DBUtils {
      */
     public static void deleteByLogisticCode(Context context, String logisticCode) {
 
-        DBUtils.deleteEachInfoFromDb(context,"s"+logisticCode);
+        DBUtils.deleteEachInfoFromDb(context, "s" + logisticCode);
         mDataBase = getExpressDataBase(context);
         SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
         writableDatabase.delete(EXPRESS_TABLE_NAME, "LogisticCode = ?", new String[]{logisticCode});

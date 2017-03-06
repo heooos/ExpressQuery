@@ -174,10 +174,18 @@ public class DetailInfoActivity extends AppCompatActivity {
             if (flag) {
                 //来自添加界面
                 DBUtils.createEachInfoTable(DetailInfoActivity.this, eachExpressName);
-                DBUtils.addExpressToDb(DetailInfoActivity.this, GetDate.getTime(), "", "", b.getShipperCode(), b.getLogisticCode(), b.getState(), "s" + number);
+                DBUtils.addExpressToDb(DetailInfoActivity.this,
+                        GetDate.getTime(),
+                        "",
+                        "",
+                        b.getShipperCode(),
+                        b.getLogisticCode(),
+                        b.getState(),
+                        "s" + number);
                 for (JsonRootBean.Traces m : traces) {
                     Log.d("快递信息", "时间:" + m.AcceptTime + "\n" + "信息:" + m.AcceptStation);
-                    DBUtils.addEachInfoToDb(DetailInfoActivity.this, eachExpressName, m.AcceptTime, m.AcceptStation);
+                    DBUtils.addEachInfoToDb(DetailInfoActivity.this,
+                            eachExpressName, m.AcceptTime, m.AcceptStation);
                 }
             } else {
                 //来自主界面
@@ -223,6 +231,12 @@ public class DetailInfoActivity extends AppCompatActivity {
         Collections.reverse(groupList);
         adapter = new DetailInfoListAdapter(context, groupList, dataMap);
         mList.setAdapter(adapter);
+        mList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                return true;
+            }
+        });
         int groupCount = mList.getCount();
         for (int i = 0; i < groupCount; i++) {
             mList.expandGroup(i);

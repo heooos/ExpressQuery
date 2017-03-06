@@ -5,10 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.bean.ListInfoBean;
@@ -16,11 +12,12 @@ import com.jkxy.expressquery.impl.IOnRecyclerViewItemClickListener;
 import com.jkxy.expressquery.impl.ISwipeMenuClickListener;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by zh on 16/9/20.
  */
-public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
+public class CustomAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     private List<ListInfoBean> mData;
     private LayoutInflater mInflater;
@@ -43,6 +40,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
+
+        if (Objects.equals("3", mData.get(position).getState())){
+            holder.mFinish.setVisibility(View.VISIBLE);
+        }else {
+            holder.mFinish.setVisibility(View.INVISIBLE);
+        }
 
         holder.mTvNumber.setText(mData.get(position).getLogisticCode());
         holder.mTvTag.setText("备注:" + mData.get(position).getCustomRemark());
@@ -90,7 +93,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         return mData.size();
     }
 
-
     public void setOnItemClickListener(IOnRecyclerViewItemClickListener listener) {
         this.itemClickListener = listener;
     }
@@ -98,33 +100,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     public void setOnSwipeMenuClickListener(ISwipeMenuClickListener listener){
         this.swipeMenuClickListener = listener;
     }
-
-    class MyViewHolder extends RecyclerView.ViewHolder {
-
-        TextView mTvNumber;
-        TextView mTvTag;
-        TextView mTvTime;
-        ImageView mImg;
-        LinearLayout mContent;
-
-        Button mCustomRemark;
-        Button mNotification;
-        Button mDeleteItem;
-
-        MyViewHolder(View itemView) {
-            super(itemView);
-            mContent = (LinearLayout) itemView.findViewById(R.id.content);
-            mTvNumber = (TextView) itemView.findViewById(R.id.tv_show);
-            mTvTag = (TextView) itemView.findViewById(R.id.tv_tag);
-            mTvTime = (TextView) itemView.findViewById(R.id.tv_time);
-            mImg = (ImageView) itemView.findViewById(R.id.img_logo);
-
-            mCustomRemark = (Button) itemView.findViewById(R.id.btnChange);
-            mNotification = (Button) itemView.findViewById(R.id.btnNotify);
-            mDeleteItem = (Button) itemView.findViewById(R.id.btnDelete);
-        }
-    }
-
 
 }
 

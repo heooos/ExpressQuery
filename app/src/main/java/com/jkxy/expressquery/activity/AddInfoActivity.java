@@ -1,7 +1,9 @@
 package com.jkxy.expressquery.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,13 +26,21 @@ import com.google.gson.Gson;
 import com.jkxy.expressquery.Constants;
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.bean.ExpressNumberCheckBean;
+import com.jkxy.expressquery.component.SelectPicturePopupWindow;
 import com.jkxy.expressquery.utils.AutoGetNumberUtils;
 import com.jkxy.expressquery.utils.ExpressNumberCheck;
 import com.jkxy.expressquery.utils.RegularUtils;
-import com.jkxy.expressquery.utils.SelectPicturePopupWindow;
+import com.soundcloud.android.crop.Crop;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Objects;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static android.app.Activity.RESULT_CANCELED;
 
 public class AddInfoActivity extends AppCompatActivity implements View.OnClickListener, SelectPicturePopupWindow.OnSelectedListener {
 
@@ -42,6 +52,9 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
     private RadioButton btnOne, btnTwo, btnStree, btnFour;
     private RadioButton[] buttons;
     private RadioGroup mGroup;
+
+    private String sdPath;//SD卡的路径
+    private String picPath;//图片存储路径
 
     private ImageView camera;
 
@@ -59,6 +72,9 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         mBtnSubmit.setOnClickListener(this);
         mBtnCancel.setOnClickListener(this);
         camera.setOnClickListener(this);
+
+        sdPath = Environment.getExternalStorageDirectory().getPath();
+        picPath = sdPath + "/" + "temp.jpg";
     }
 
     //初始化组件
@@ -120,22 +136,13 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
             case 0:
                 Intent intent = new Intent();
                 intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                String state = Environment.getExternalStorageState();
-                if (Objects.equals(state, Environment.MEDIA_MOUNTED)) {
-                    File path = Environment.getExternalStorageDirectory();
-                    File file = new File(path, "ss.jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    startActivityForResult(intent, Constants.REQUEST_ACTION_IMAGE_CAPTURE);
-                } else {
-                    Toast.makeText(AddInfoActivity.this, "存储卡不可用", Toast.LENGTH_SHORT).show();
-                }
+                Uri uri = Uri.fromFile(new File(picPath));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                startActivityForResult(intent, Constants.REQUEST_ACTION_IMAGE_CAPTURE);
                 select.dismissPopupWindow();
                 break;
             case 1:
-                Intent getImage = new Intent(Intent.ACTION_GET_CONTENT);
-                getImage.addCategory(Intent.CATEGORY_OPENABLE);
-                getImage.setType("image/*");
-                startActivityForResult(getImage, Constants.REQUEST_ACTION_GET_CONTENT);
+                Crop.pickImage(this);
                 select.dismissPopupWindow();
                 break;
             case 2:
@@ -200,24 +207,22 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         switch (requestCode) {
             case Constants.REQUEST_ACTION_IMAGE_CAPTURE:
 
-                String state = Environment.getExternalStorageState();
-                if (state.equals(Environment.MEDIA_MOUNTED)) {
-                    File path = Environment
-                            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                    File tempFile = new File(path, "ss.jpg");
-                    startPhotoZoom(Uri.fromFile(tempFile));
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "未找到存储卡，无法存储照片！", Toast.LENGTH_SHORT).show();
+                FileInputStream fis;
+                try {
+                    fis = new FileInputStream(picPath);
+                    Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                    Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));
+                    beginCrop(uri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
-                break;
-            case Constants.REQUEST_ACTION_GET_CONTENT:
 
                 break;
-            case Constants.REQUEST_CROP_CODE:
-                if (data != null) {
-                    getImageToView(data);
-                }
+            case Crop.REQUEST_PICK:
+                beginCrop(data.getData());
+                break;
+            case Crop.REQUEST_CROP:
+                handleCrop(resultCode, data);
                 break;
         }
 
@@ -228,31 +233,30 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void getImageToView(Intent data) {
+    private void handleCrop(int resultCode, Intent data) {
+        switch (resultCode) {
+            case RESULT_OK:
+                try {
+                    Bitmap bp = MediaStore.Images.Media.getBitmap(getContentResolver(), Crop.getOutput(data));
+                    String num = AutoGetNumberUtils.getNumber(bp);
+                    mEtExpressNumber.setText(num);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case RESULT_CANCELED:
 
-        Bundle extras = data.getExtras();
-        if (extras != null) {
-            Bitmap photo = extras.getParcelable("data");
-//            Drawable drawable = new BitmapDrawable(this.getResources(), photo);
-            String str = AutoGetNumberUtils.getNumber(photo);
-            mEtExpressNumber.setText(str);
+                break;
+            case Crop.RESULT_ERROR:
+                Toast.makeText(this, Crop.getError(data).getMessage(), Toast.LENGTH_SHORT).show();
+                break;
+
         }
     }
 
-    private void startPhotoZoom(Uri uri) {
-
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        // 设置裁剪
-        intent.putExtra("crop", "true");
-        // aspectX aspectY 是宽高的比例
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX", 340);
-        intent.putExtra("outputY", 340);
-        intent.putExtra("return-data", false);
-        startActivityForResult(intent, Constants.REQUEST_CROP_CODE);
+    private void beginCrop(Uri data) {
+        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+        Crop.of(data, destination).withAspect(10, 1).start(this);
     }
 
     @Override
@@ -265,5 +269,68 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         return super.onKeyDown(keyCode, event);
     }
 
+
+    /**
+     * 通过uri获取图片并进行压缩
+     *
+     * @param uri
+     */
+    public static Bitmap getBitmapFormUri(Activity ac, Uri uri) throws FileNotFoundException, IOException {
+        InputStream input = ac.getContentResolver().openInputStream(uri);
+        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
+        onlyBoundsOptions.inJustDecodeBounds = true;
+        onlyBoundsOptions.inDither = true;//optional
+        onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
+        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
+        input.close();
+        int originalWidth = onlyBoundsOptions.outWidth;
+        int originalHeight = onlyBoundsOptions.outHeight;
+        if ((originalWidth == -1) || (originalHeight == -1))
+            return null;
+        //图片分辨率以480x800为标准
+        float hh = 800f;//这里设置高度为800f
+        float ww = 480f;//这里设置宽度为480f
+        //缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
+        int be = 1;//be=1表示不缩放
+        if (originalWidth > originalHeight && originalWidth > ww) {//如果宽度大的话根据宽度固定大小缩放
+            be = (int) (originalWidth / ww);
+        } else if (originalWidth < originalHeight && originalHeight > hh) {//如果高度高的话根据宽度固定大小缩放
+            be = (int) (originalHeight / hh);
+        }
+        if (be <= 0)
+            be = 1;
+        //比例压缩
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inSampleSize = be;//设置缩放比例
+        bitmapOptions.inDither = true;//optional
+        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
+        input = ac.getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
+        input.close();
+
+        return compressImage(bitmap);//再进行质量压缩
+    }
+
+    /**
+     * 质量压缩方法
+     *
+     * @param image
+     * @return
+     */
+    public static Bitmap compressImage(Bitmap image) {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 100;
+        while (baos.toByteArray().length / 1024 > 100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
+            baos.reset();//重置baos即清空baos
+            //第一个参数 ：图片格式 ，第二个参数： 图片质量，100为最高，0为最差  ，第三个参数：保存压缩后的数据的流
+            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;//每次都减少10
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
+        return bitmap;
+    }
 
 }

@@ -22,7 +22,9 @@ import android.widget.Toast;
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.CustomAdapter;
 import com.jkxy.expressquery.bean.ListInfoBean;
+import com.jkxy.expressquery.component.ChangeCustomRemark;
 import com.jkxy.expressquery.db.DBUtils;
+import com.jkxy.expressquery.impl.IDialogButtonClickListener;
 import com.jkxy.expressquery.impl.IOnRecyclerViewItemClickListener;
 import com.jkxy.expressquery.impl.ISwipeMenuClickListener;
 
@@ -63,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter.setOnItemClickListener(new IOnRecyclerViewItemClickListener() {
             @Override
             public void onItemClick(ListInfoBean bean, View v, int position) {
-                // TODO: 16/9/20 RecyclerView点击事件
-                // TODO: 2016/11/8 数据获取
                 Bundle bundle = new Bundle();
                 bundle.putString("state", bean.getState());
                 bundle.putString("code", bean.getShipperCode());
@@ -77,10 +77,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mAdapter.setOnSwipeMenuClickListener(new ISwipeMenuClickListener() {
             @Override
-            public void onSwipeMenuClick(ListInfoBean bean, int tag, int position) {
+            public void onSwipeMenuClick(final ListInfoBean bean, int tag, int position) {
                 switch (tag) {
                     case 1:
-                        Toast.makeText(MainActivity.this, "修改备注", Toast.LENGTH_SHORT).show();
+                        final ChangeCustomRemark remark = new ChangeCustomRemark();
+                        remark.showDialog(MainActivity.this);
+                        remark.setListener(new IDialogButtonClickListener() {
+                            @Override
+                            public void onPositiveButtonClicked(String str) {
+                                DBUtils.updateExpressToDb(MainActivity.this,bean.getLogisticCode(),str);
+                                initData();
+                                remark.dismiss();
+                            }
+                        });
                         break;
                     case 2:
                         Toast.makeText(MainActivity.this, "添加到状态栏", Toast.LENGTH_SHORT).show();

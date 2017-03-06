@@ -16,5 +16,6 @@ public class MyApplication extends Application {
             StrictMode.setVmPolicy(builder.build());
         }
         super.onCreate();
+
     }
 }

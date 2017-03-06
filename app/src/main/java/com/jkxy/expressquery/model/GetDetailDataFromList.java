@@ -7,7 +7,6 @@ import com.jkxy.expressquery.bean.DetailInfoGroupBean;
 import com.jkxy.expressquery.utils.RegularUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class GetDetailDataFromList {
                     DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
                     childBeanList.add(childBean);
                 }
-                Collections.reverse(childBeanList);
+//                Collections.reverse(childBeanList);
                 dataMap.put(bean, childBeanList);
             }
         }

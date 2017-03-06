@@ -1,4 +1,4 @@
-package com.jkxy.expressquery.utils;
+package com.jkxy.expressquery.component;
 
 import android.app.Activity;
 import android.content.Context;
