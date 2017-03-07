@@ -80,7 +80,7 @@ public class SelectPicturePopupWindow implements View.OnClickListener {
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.showAtLocation(activity.getWindow().getDecorView(), Gravity.CENTER | Gravity.BOTTOM, 0, 0);
         popupWindow.setAnimationStyle(android.R.style.Animation_InputMethod); // 设置窗口显示的动画效果
-        popupWindow.setFocusable(false); // 点击其他地方隐藏键盘 popupWindow
+        popupWindow.setFocusable(true); // 点击其他地方隐藏键盘 popupWindow
         popupWindow.update();
         popupWindowState = true;
     }

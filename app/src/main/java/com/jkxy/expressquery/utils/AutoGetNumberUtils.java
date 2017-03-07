@@ -12,9 +12,8 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 // TODO: 2017/3/3 添加异步处理
 public class AutoGetNumberUtils {
 
-    static String PATH = Environment.getExternalStorageDirectory().getPath() + "/tesseract/";
+    private static String PATH = Environment.getExternalStorageDirectory().getPath() + "/tesseract/";
     //训练数据路径，必须包含tesseract文件夹
-    static final String TESSBASE_PATH = "/storage/emulated/0/Download/tesseract/";
     //识别语言英文
     static final String DEFAULT_LANGUAGE = "eng";
 
@@ -31,8 +30,6 @@ public class AutoGetNumberUtils {
         Log.d("识别的内容", text);
         baseApi.clear();
         baseApi.end();
-
         return text;
     }
-
 }

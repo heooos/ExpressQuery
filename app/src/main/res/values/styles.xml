@@ -15,13 +15,6 @@
 
     </style>
 
-    <!--<style name="MaterialAnimations.Icon.Medium.Scaled" parent="AppTheme">-->
-        <!--<item name="android:alpha">0</item>-->
-        <!--<item name="android:scaleX">0.5</item>-->
-        <!--<item name="android:scaleY">0.5</item>-->
-    <!--</style>-->
-
-
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
