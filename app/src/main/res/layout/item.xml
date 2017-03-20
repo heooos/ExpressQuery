@@ -28,7 +28,7 @@
                 android:layout_height="70dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="16dp"
-                android:src="@drawable/sf"
+                android:src="@mipmap/ic_launcher"
                 android:transitionName="test" />
 
             <LinearLayout
@@ -90,14 +90,14 @@
             android:text="@string/swipe_menu_remark"
             android:textColor="@android:color/black" />
 
-        <Button
-            android:id="@+id/btnNotify"
-            android:layout_width="@dimen/swipe_item_button_width"
-            android:layout_height="match_parent"
-            android:background="#ecd50a"
-            android:clickable="true"
-            android:text="@string/swipe_menu_notification"
-            android:textColor="@android:color/black" />
+        <!--<Button-->
+            <!--android:id="@+id/btnNotify"-->
+            <!--android:layout_width="@dimen/swipe_item_button_width"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="#ecd50a"-->
+            <!--android:clickable="true"-->
+            <!--android:text="@string/swipe_menu_notification"-->
+            <!--android:textColor="@android:color/black" />-->
 
         <Button
             android:id="@+id/btnDelete"

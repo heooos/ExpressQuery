@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
     <string name="app_name">快递查询</string>
     <string name="action_settings">设置</string>
     <string name="dialog_tips_one">快递单号:</string>
@@ -12,4 +11,5 @@
     <string name="swipe_menu_remark">修改备注</string>
     <string name="swipe_menu_notification">状态栏提醒</string>
     <string name="swipe_menu_delete">删除</string>
+    <string name="DetailInfo">快递详情</string>
 </resources>

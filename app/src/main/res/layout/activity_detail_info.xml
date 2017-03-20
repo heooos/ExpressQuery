@@ -1,108 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_detail_info"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#d9f1da"
+    android:id="@+id/head_view"
     tools:context="com.jkxy.expressquery.activity.DetailInfoActivity">
-
-    <LinearLayout
-        android:id="@+id/head_view"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="20dp">
-
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/sf"
-            android:transitionName="test" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="快递单号:" />
-
-                <TextView
-                    android:id="@+id/order_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="123456789" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="备注:" />
-
-                <TextView
-                    android:id="@+id/custom_remark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="袜子" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="物流状态:" />
-
-                <TextView
-                    android:id="@+id/state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="配送中" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="配送员电话:" />
-
-                <TextView
-                    android:id="@+id/sender_phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="123456789" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/split_line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/head_view"
-        android:layout_marginTop="20dp"
-        android:background="#000" />
 
     <ExpandableListView
         android:groupIndicator="@null"
@@ -112,4 +17,4 @@
         android:layout_below="@+id/split_line"
         android:layout_marginTop="5dp"
         android:divider="@null" />
-</RelativeLayout>
+</LinearLayout>

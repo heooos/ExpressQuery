@@ -4,12 +4,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.ArcMotion;
-import android.transition.ChangeBounds;
-import android.transition.Transition;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class DetailInfoActivity extends AppCompatActivity {
+public class DetailInfoActivity extends AppCompatActivity implements AbsListView.OnScrollListener {
 
     private String code;
     private String number;
@@ -50,6 +50,9 @@ public class DetailInfoActivity extends AppCompatActivity {
     private TextView tvCustomRemark;
     private TextView tvState;
     private TextView tvSenderPhone;
+    private View headView;
+
+    private float currentY = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,21 +60,24 @@ public class DetailInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_info);
         initData();
         initView();
-        setUpWindowTransition();
-        if (flag) {
-            Log.d("进入查询", "查询");
-            new AsyncGetInfo().execute(code, number); //来自添加界面的数据
-        }
+        cacheMethod();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     /**
      * 初始化布局文件
      */
     private void initView() {
-        tvOrderCode = (TextView) findViewById(R.id.order_code);
-        tvCustomRemark = (TextView) findViewById(R.id.custom_remark);
-        tvState = (TextView) findViewById(R.id.state);
-        tvSenderPhone = (TextView) findViewById(R.id.sender_phone);
+        headView = getHeadView();
+
+        tvOrderCode = (TextView) headView.findViewById(R.id.order_code);
+        tvCustomRemark = (TextView) headView.findViewById(R.id.custom_remark);
+        tvState = (TextView) headView.findViewById(R.id.state);
+        tvSenderPhone = (TextView) headView.findViewById(R.id.sender_phone);
         mList = (ExpandableListView) findViewById(R.id.detail_list);
     }
 
@@ -88,54 +94,50 @@ public class DetailInfoActivity extends AppCompatActivity {
         eachExpressName = "s" + number;
     }
 
-    private void setUpWindowTransition() {
 
-        final ChangeBounds ts = new ChangeBounds();
-        ts.setPathMotion(new ArcMotion());
-        ts.addListener(new Transition.TransitionListener() {
-            @Override
-            public void onTransitionStart(Transition transition) {
+    //数据加载
+    private void cacheMethod() {
+        if (flag) {
+            Log.d("进入查询", "查询");
+            new AsyncGetInfo().execute(code, number); //来自添加界面的数据
+        } else {
+            // TODO: 2017/3/1 问题件处理
+            if (state.equals("2")) {
+                new AsyncGetInfo().execute(code, number);
+            } else {
+                Log.d("直接加载", "直接加载");
+                List<DetailInfoBean> list = DBUtils.queryData(DetailInfoActivity.this, eachExpressName);
+                CacheBean cacheBean = GetDetailDataFromList.getMap(list);
+                showList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
+                HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, cacheBean.getPhoneNumber());
+                showDetailInfo(bean);
             }
+        }
+    }
 
-            @Override
-            public void onTransitionEnd(Transition transition) {
-                Log.d("onTransitionEnd", "动画执行完毕");
-                if (flag) {
-                    return;
-                } else {
-                    // TODO: 2017/3/1 问题件处理
-                    if (state.equals("2")) {
-                        new AsyncGetInfo().execute(code, number);
-                    } else {
-                        Log.d("直接加载", "直接加载");
-                        String phoneNumber = "";
-                        List<DetailInfoBean> list = DBUtils.queryData(DetailInfoActivity.this, eachExpressName);
-                        CacheBean cacheBean = GetDetailDataFromList.getMap(list);
-                        showList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
-                        HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, cacheBean.getPhoneNumber());
-                        showDetailInfo(bean);
-                    }
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+        View v = view.getChildAt(0);
+        if (v != null) {
+            float cache = v.getY();
+            if ((cache - currentY) > 0) {
+                currentY = cache;
+            } else {
+                currentY = cache;
+                Log.d("测试",firstVisibleItem+"");
+                if (firstVisibleItem != 0){
+                    getSupportActionBar().setTitle(tvCustomRemark.getText().toString());
+                }else {
+                    getSupportActionBar().setTitle("快递详情");
                 }
-
-
             }
-
-            @Override
-            public void onTransitionCancel(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionPause(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionResume(Transition transition) {
-
-            }
-        });
-        getWindow().setSharedElementEnterTransition(ts);
+        }
 
     }
 
@@ -147,7 +149,6 @@ public class DetailInfoActivity extends AppCompatActivity {
             String result;
             try {
                 result = new GetExpressInfo().queryInfo(strings[0], strings[1]);
-                Log.d("doInBackground", "查询结果:" + result);
                 return result;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -160,9 +161,7 @@ public class DetailInfoActivity extends AppCompatActivity {
             Log.d("onPostExecute", "查询结束");
             Gson g = new Gson();
             JsonRootBean b = g.fromJson(s, JsonRootBean.class);
-
             state = b.getState();
-
             // TODO: 16/9/24 获取到快递信息
             List<JsonRootBean.Traces> traces = b.getTraces();
 
@@ -197,8 +196,14 @@ public class DetailInfoActivity extends AppCompatActivity {
                     // TODO: 2017/2/20 数据有更新  将更新的数据添加到数据库中
                     for (int i = 0; i < traces.size(); i++) {
                         if ((i + 1) > count) {
-                            Log.d("快递信息", "时间:" + traces.get(i).AcceptTime + "\n" + "信息:" + traces.get(i).AcceptStation);
-                            DBUtils.addEachInfoToDb(DetailInfoActivity.this, eachExpressName, traces.get(i).AcceptTime, traces.get(i).AcceptStation);
+                            Log.d("快递信息", "时间:"
+                                    + traces.get(i).AcceptTime
+                                    + "\n" + "信息:"
+                                    + traces.get(i).AcceptStation);
+                            DBUtils.addEachInfoToDb(DetailInfoActivity.this,
+                                    eachExpressName,
+                                    traces.get(i).AcceptTime,
+                                    traces.get(i).AcceptStation);
                         }
                     }
                 }
@@ -213,12 +218,15 @@ public class DetailInfoActivity extends AppCompatActivity {
                         m.AcceptStation);
                 list.add(bean);
             }
-
-
             //在此处 表示程序完成单号的检查以及查询。返回了查询的结果。
             CacheBean cacheBean = GetDetailDataFromList.getMap(list);
-            showList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
-            HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, cacheBean.getPhoneNumber());
+            showList(DetailInfoActivity.this,
+                    cacheBean.getGroupList(),
+                    cacheBean.getDataMap());
+            HeadViewInfoBean bean = new HeadViewInfoBean(number,
+                    customRemark,
+                    state,
+                    cacheBean.getPhoneNumber());
             showDetailInfo(bean);
             super.onPostExecute(s);
         }
@@ -231,6 +239,7 @@ public class DetailInfoActivity extends AppCompatActivity {
         Collections.reverse(groupList);
         adapter = new DetailInfoListAdapter(context, groupList, dataMap);
         mList.setAdapter(adapter);
+
         mList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
@@ -241,7 +250,8 @@ public class DetailInfoActivity extends AppCompatActivity {
         for (int i = 0; i < groupCount; i++) {
             mList.expandGroup(i);
         }
-        ;
+        mList.addHeaderView(headView);
+        mList.setOnScrollListener(this);
     }
 
     /**
@@ -269,6 +279,17 @@ public class DetailInfoActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
+
+    /**
+     * 头部View
+     *
+     * @return
+     */
+    private View getHeadView() {
+        View view = LayoutInflater.from(this).inflate(R.layout.head_layout, null);
+        return view;
+    }
+
+
 }

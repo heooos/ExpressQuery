@@ -43,7 +43,6 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
     private RadioButton[] buttons;
     private RadioGroup mGroup;
 
-
     private ImageView camera;
 
     private SelectPicturePopupWindow select;
@@ -52,14 +51,16 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_info);
-
-
         initView();
-
         mBtnCheck.setOnClickListener(this);
         mBtnSubmit.setOnClickListener(this);
         mBtnCancel.setOnClickListener(this);
         camera.setOnClickListener(this);
+        String str;
+        if ((str = getIntent().getStringExtra("code")) != null) {
+            mEtExpressNumber.setText(str);
+        }
+
     }
 
     //初始化组件
@@ -83,7 +84,9 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         switch (view.getId()) {
             case R.id.btn_submit:
                 Log.d("提交", "提交");
-                String code = RegularUtils.parseExpressCode(((RadioButton) findViewById(mGroup.getCheckedRadioButtonId())).getText().toString());
+                String code = RegularUtils.parseExpressCode(
+                        ((RadioButton) findViewById(mGroup.getCheckedRadioButtonId()))
+                                .getText().toString());
                 if (code != null) {
                     Intent intent = new Intent(this, DetailInfoActivity.class);
                     Bundle bundle = new Bundle();
@@ -167,7 +170,9 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
                         rb.setText(info);
                         rb.setVisibility(View.VISIBLE);
                         buttons[i] = rb;
+
                     }
+
                     Snackbar.make(coordinatorLayout, "请选择快递公司并提交", Snackbar.LENGTH_SHORT).show();
                 } else {
                     mBtnSubmit.setEnabled(false);

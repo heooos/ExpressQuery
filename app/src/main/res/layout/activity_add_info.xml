@@ -4,11 +4,9 @@
     android:id="@+id/activity_add_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="16dp"
-    android:layout_marginTop="16dp"
     android:orientation="vertical"
+    android:background="@color/colorBackground"
     tools:context="com.jkxy.expressquery.activity.AddInfoActivity">
-
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/layoutRoot"
         android:layout_width="match_parent"
@@ -53,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/start_layout"
                 android:layout_marginTop="15dp"
-                android:background="@color/colorAccent"
+                android:background="@color/colorPrimary"
                 android:text="检测快递单号" />
 
             <LinearLayout
@@ -144,7 +142,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@color/colorAccent"
+                    android:background="@color/colorPrimary"
                     android:text="取消" />
                 <LinearLayout
                     android:layout_marginLeft="5dp"
@@ -164,6 +162,7 @@
         </RelativeLayout>
 
 
-    </android.support.design.widget.CoordinatorLayout>
+
+</android.support.design.widget.CoordinatorLayout>
 
 </LinearLayout>

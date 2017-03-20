@@ -48,6 +48,7 @@ public class GetDetailDataFromList {
         }
         System.out.println("键数量为:" + groupList.size());
         for (int i = 0; i < groupList.size(); i++) {
+            System.out.println("~~~~~~~~~~~~~~~");
             List<DetailInfoChildBean> childBeanList = new ArrayList<>();
             DetailInfoGroupBean bean = groupList.get(i);
             for (DetailInfoBean l : list) {
@@ -56,6 +57,7 @@ public class GetDetailDataFromList {
                         .equals(l.getDateYearMonthDay())) {
                     String dateTime = l.getDateTime();
                     String info = l.getInfo();
+                    System.out.println(info);
                     DetailInfoChildBean childBean = new DetailInfoChildBean(dateTime, info);
                     childBeanList.add(childBean);
                 }

@@ -3,21 +3,14 @@ package com.jkxy.expressquery.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Slide;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.Toast;
 
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.CustomAdapter;
@@ -27,6 +20,7 @@ import com.jkxy.expressquery.db.DBUtils;
 import com.jkxy.expressquery.impl.IDialogButtonClickListener;
 import com.jkxy.expressquery.impl.IOnRecyclerViewItemClickListener;
 import com.jkxy.expressquery.impl.ISwipeMenuClickListener;
+import com.jkxy.expressquery.service.ClipboardListenerService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
         //不允许截图
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        startService(new Intent(this, ClipboardListenerService.class));
         initViews();
         mDatas = new ArrayList<>(); //实例化数据源
         mAdapter = new CustomAdapter(this, mDatas);
@@ -58,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         initEvent();
-        setupWindowAnimations();
     }
 
     private void initEvent() {
@@ -72,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 bundle.putString("customRemark", bean.getCustomRemark());
                 bundle.putString("number", bean.getLogisticCode());
                 bundle.putBoolean("flag", false);
-                transitionToActivity(DetailInfoActivity.class, bundle, v.findViewById(R.id.img_logo));
+                Intent i = new Intent(MainActivity.this, DetailInfoActivity.class);
+                i.putExtras(bundle);
+                startActivity(i);
             }
         });
 
@@ -92,9 +87,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
                         break;
-                    case 2:
-                        Toast.makeText(MainActivity.this, "添加到状态栏", Toast.LENGTH_SHORT).show();
-                        break;
+//                    case 2:
+//                        Toast.makeText(MainActivity.this, "添加到状态栏", Toast.LENGTH_SHORT).show();
+//                        break;
                     case 3:
                         DBUtils.deleteByLogisticCode(MainActivity.this,bean.getLogisticCode());
                         initData();
@@ -106,35 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void transitionToActivity(Class target, Bundle bundle, View view) {
 
-        final Pair[] pairs = createSafeTransitionParticipants(this, false, view);
-        beginActivity(target, bundle, pairs);
-    }
-
-    private void beginActivity(Class target, Bundle bundle, Pair[] pairs) {
-
-        Intent i = new Intent(MainActivity.this, target);
-        i.putExtras(bundle);
-        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pairs);
-        startActivity(i, transitionActivityOptions.toBundle());
-
-    }
-
-    private Pair[] createSafeTransitionParticipants(MainActivity mainActivity, boolean b, View view) {
-
-        List<Pair> participants = new ArrayList<>(3);
-        addNonNullViewToTransitionParticipants(view, participants);
-        return participants.toArray(new Pair[participants.size()]);
-    }
-
-    private void addNonNullViewToTransitionParticipants(View view, List<Pair> participants) {
-
-        if (view == null) {
-            return;
-        }
-        participants.add(new Pair<>(view, view.getTransitionName()));
-    }
 
     /**
      * 数据源初始化
@@ -182,18 +149,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * 设置，activity界面支持，左边一次滑出
-     */
-    private void setupWindowAnimations() {
-        // Re-enter transition is executed when returning to this activity
-        Slide slideTransition = new Slide();//滑出
-        slideTransition.setSlideEdge(Gravity.LEFT);//滑出的方向
-        slideTransition.setInterpolator(new DecelerateInterpolator());
-        slideTransition.setDuration(500);//动画持续时间
-        getWindow().setReenterTransition(slideTransition);//
-        getWindow().setExitTransition(slideTransition);
-    }
 
     @Override
     protected void onResume() {

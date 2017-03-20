@@ -50,7 +50,7 @@ public class CustomAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.mTvNumber.setText(mData.get(position).getLogisticCode());
         holder.mTvTag.setText("备注:" + mData.get(position).getCustomRemark());
         holder.mTvTime.setText("添加时间:" + mData.get(position).getDate());
-        holder.mImg.setImageResource(R.drawable.sf);
+        holder.mImg.setImageResource(R.mipmap.ic_launcher);
         holder.mContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,14 +68,14 @@ public class CustomAdapter extends RecyclerView.Adapter<MyViewHolder> {
             }
         });
 
-        holder.mNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (swipeMenuClickListener != null){
-                    swipeMenuClickListener.onSwipeMenuClick(mData.get(position),2,position);
-                }
-            }
-        });
+//        holder.mNotification.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (swipeMenuClickListener != null){
+//                    swipeMenuClickListener.onSwipeMenuClick(mData.get(position),2,position);
+//                }
+//            }
+//        });
 
         holder.mDeleteItem.setOnClickListener(new View.OnClickListener() {
             @Override

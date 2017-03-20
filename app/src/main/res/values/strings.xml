@@ -6,4 +6,5 @@
     <string name="dialog_tips_two">WitchOne:</string>
     <string name="action_about">About</string>
     <string name="add_express_info">AddExpress</string>
+    <string name="DetailInfo">DetailInfo</string>
 </resources>

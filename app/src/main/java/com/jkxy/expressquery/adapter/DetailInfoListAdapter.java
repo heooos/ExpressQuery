@@ -11,6 +11,8 @@ import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.bean.DetailInfoChildBean;
 import com.jkxy.expressquery.bean.DetailInfoGroupBean;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,23 +23,33 @@ import java.util.Map;
 public class DetailInfoListAdapter extends BaseExpandableListAdapter {
 
     private final Context context;
-    private final Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap;
+    private final Map<DetailInfoGroupBean, List<DetailInfoChildBean>> newMap;
     private List<DetailInfoGroupBean> groupList;
 
     public DetailInfoListAdapter(Context context, List<DetailInfoGroupBean> groupList, Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap) {
         this.context = context;
-        this.dataMap = dataMap;
         this.groupList = groupList;
+        this.newMap = reverseList(dataMap);
+    }
+
+    private Map<DetailInfoGroupBean, List<DetailInfoChildBean>> reverseList(Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap) {
+        Map<DetailInfoGroupBean, List<DetailInfoChildBean>> map = new HashMap<>();
+        for (int i = 0; i < this.groupList.size(); i++) {
+            List<DetailInfoChildBean> list = dataMap.get(groupList.get(i));
+            Collections.reverse(list);
+            map.put(groupList.get(i), list);
+        }
+        return map;
     }
 
     @Override
     public int getGroupCount() {
-        return dataMap.size();
+        return newMap.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return dataMap.get(groupList.get(groupPosition)).size();
+        return newMap.get(groupList.get(groupPosition)).size();
     }
 
     @Override
@@ -47,7 +59,8 @@ public class DetailInfoListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return dataMap.get(groupList.get(groupPosition)).get(childPosition);
+
+        return newMap.get(groupList.get(groupPosition)).get(childPosition);
     }
 
     @Override
@@ -87,8 +100,8 @@ public class DetailInfoListAdapter extends BaseExpandableListAdapter {
         }
         TextView dateTime = (TextView) convertView.findViewById(R.id.date_time);
         TextView info = (TextView) convertView.findViewById(R.id.info);
-        dateTime.setText(dataMap.get(groupList.get(groupPosition)).get(childPosition).getDateTime());
-        info.setText(dataMap.get(groupList.get(groupPosition)).get(childPosition).getInfo());
+        dateTime.setText(newMap.get(groupList.get(groupPosition)).get(childPosition).getDateTime());
+        info.setText(newMap.get(groupList.get(groupPosition)).get(childPosition).getInfo());
 
         return convertView;
     }

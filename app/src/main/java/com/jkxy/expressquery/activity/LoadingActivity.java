@@ -23,8 +23,7 @@ public class LoadingActivity extends AppCompatActivity {
             @Override
             protected Uri doInBackground(String... params) {
                 Bitmap bitmap = ImageLoader.getBitmapFromFile(params[0]);
-                Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));
-                return uri;
+                return Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));
             }
 
             @Override

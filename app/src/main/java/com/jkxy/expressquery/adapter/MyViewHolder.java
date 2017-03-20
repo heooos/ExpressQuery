@@ -34,7 +34,7 @@ class MyViewHolder extends RecyclerView.ViewHolder {
         mImg = (ImageView) itemView.findViewById(R.id.img_logo);
         mFinish = (ImageView) itemView.findViewById(R.id.img_finish);
         mCustomRemark = (Button) itemView.findViewById(R.id.btnChange);
-        mNotification = (Button) itemView.findViewById(R.id.btnNotify);
+//        mNotification = (Button) itemView.findViewById(R.id.btnNotify);
         mDeleteItem = (Button) itemView.findViewById(R.id.btnDelete);
     }
 }
