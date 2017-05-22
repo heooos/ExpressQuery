@@ -1,13 +1,13 @@
 package com.jkxy.expressquery.model;
 
-import com.jkxy.expressquery.bean.CacheBean;
-import com.jkxy.expressquery.bean.DetailInfoBean;
-import com.jkxy.expressquery.bean.DetailInfoChildBean;
-import com.jkxy.expressquery.bean.DetailInfoGroupBean;
+import com.jkxy.expressquery.entity.CacheBean;
+import com.jkxy.expressquery.entity.DetailInfoBean;
+import com.jkxy.expressquery.entity.DetailInfoChildBean;
+import com.jkxy.expressquery.entity.DetailInfoGroupBean;
 import com.jkxy.expressquery.utils.RegularUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public class GetDetailDataFromList {
         String phoneNumber = "";
 
         List<DetailInfoGroupBean> groupList = new ArrayList<>();
-        Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new HashMap<>();
+        Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap = new LinkedHashMap<>();
         for (int i = 0; i < list.size(); i++) {
             String dateYearMonthDay = list.get(i).getDateYearMonthDay();
             String dateWeek = list.get(i).getDateWeek();

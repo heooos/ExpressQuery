@@ -1,4 +1,4 @@
-package com.jkxy.expressquery.bean;
+package com.jkxy.expressquery.entity;
 
 /**
  * Created by zh on 16/9/23.

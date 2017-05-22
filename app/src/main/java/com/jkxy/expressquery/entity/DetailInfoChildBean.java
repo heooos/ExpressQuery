@@ -1,10 +1,10 @@
-package com.jkxy.expressquery.bean;
+package com.jkxy.expressquery.entity;
 
 /**
  * Created by zh on 2017/2/21.
  */
 
-public class DetailInfoChildBean {
+public class DetailInfoChildBean extends Info{
     private String dateTime;
     private String info;
 

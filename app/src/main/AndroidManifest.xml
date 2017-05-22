@@ -5,7 +5,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-permission-sdk-23 android:name="android.permission.INTERNET" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
@@ -27,20 +29,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:parentActivityName=".activity.MainActivity"
             android:name=".activity.AddInfoActivity"
-            android:label="@string/add_express_info" >
+            android:label="@string/add_express_info"
+            android:theme="@style/CustomTheme"
+            android:parentActivityName=".activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jkxy.expressquery.activity.MainActivity" />
         </activity>
         <activity
+            android:name=".activity.DetailInfoActivity"
             android:label="@string/DetailInfo"
-            android:name=".activity.DetailInfoActivity" />
+            android:theme="@style/CustomTheme" />
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity
-            android:label="加载中"
             android:name=".activity.LoadingActivity"
+            android:label="加载中"
             android:theme="@style/Theme.AppCompat.Dialog" />
 
         <service
@@ -56,9 +60,11 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

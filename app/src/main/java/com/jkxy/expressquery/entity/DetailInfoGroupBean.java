@@ -1,10 +1,10 @@
-package com.jkxy.expressquery.bean;
+package com.jkxy.expressquery.entity;
 
 /**
  * Created by zh on 2017/2/20.
  */
 
-public class DetailInfoGroupBean {
+public class DetailInfoGroupBean extends Info{
 
     private String dateYearMonthDay;
     private String dateWeek;

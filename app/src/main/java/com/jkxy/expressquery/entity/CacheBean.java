@@ -1,4 +1,4 @@
-package com.jkxy.expressquery.bean;
+package com.jkxy.expressquery.entity;
 
 import java.util.List;
 import java.util.Map;

@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.jkxy.expressquery.bean.DetailInfoBean;
-import com.jkxy.expressquery.bean.ListInfoBean;
+import com.jkxy.expressquery.entity.DetailInfoBean;
+import com.jkxy.expressquery.entity.ListInfoBean;
 import com.jkxy.expressquery.utils.DateUtils;
 
 import java.util.ArrayList;
@@ -111,11 +111,12 @@ public class DBUtils {
     }
 
     /**
-     * 更新主数据库
-     *
+     * 更新主数据库中数据的备注信息
      * @param context
+     * @param LogisticCode  快递单号
+     * @param customRemark  备注信息
      */
-    public static void updateExpressToDb(Context context, String LogisticCode, String customRemark) {
+    public static void updateExpressCustomRemarkToDb(Context context, String LogisticCode, String customRemark) {
         mDataBase = getExpressDataBase(context);
         SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -124,6 +125,45 @@ public class DBUtils {
                 values,
                 "LogisticCode = ?",
                 new String[]{LogisticCode});
+    }
+
+    /**
+     * 更新主数据库中数据的状态信息
+     * @param context
+     * @param LogisticCode 快递单号
+     * @param customRemark 快递状态
+     */
+    public static void updateExpressStateToDb(Context context, String LogisticCode, String state) {
+        mDataBase = getExpressDataBase(context);
+        SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("State", state);
+        writableDatabase.update(EXPRESS_TABLE_NAME,
+                values,
+                "LogisticCode = ?",
+                new String[]{LogisticCode});
+    }
+
+
+
+    /**
+     * 根据传入的表名 检查该表是否存在
+     *
+     * @param context
+     * @param number
+     * @return 如果存在 返回true  否则返回false
+     */
+    public static boolean checkNumberExists(Context context, String number) {
+        // TODO: 2017/5/17
+        mDataBase = getExpressDataBase(context);
+        SQLiteDatabase readableDatabase = mDataBase.getReadableDatabase();
+        Cursor cursor = readableDatabase.query(EXPRESS_TABLE_NAME, null, "LogisticCode = ?", new String[]{number}, null, null, null);
+        if (cursor.moveToNext()) {
+            cursor.close();
+            return true;
+        }
+        cursor.close();
+        return false;
     }
 
 
@@ -227,6 +267,18 @@ public class DBUtils {
         SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
         writableDatabase.execSQL("DROP TABLE " + tableName);
 
+    }
+
+    /**
+     * 根据提供的快递单号 删除该快递的信息
+     *
+     * @param context
+     * @param name
+     */
+    public static void deleteEachInfoByNumber(Context context, String name) {
+        mDataBase = getExpressDataBase(context);
+        SQLiteDatabase writableDatabase = mDataBase.getWritableDatabase();
+        writableDatabase.delete(name, null, null);
     }
 
 }

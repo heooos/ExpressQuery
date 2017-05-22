@@ -1,21 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_add_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/colorBackground"
+    android:orientation="vertical"
     tools:context="com.jkxy.expressquery.activity.AddInfoActivity">
+
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/layoutRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.Toolbar
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:id="@+id/addinfo_toolbar"
+                style="@style/CustomToolbarTheme"
+                app:title="添加快递"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="?attr/homeAsUpIndicator" />
+        </android.support.design.widget.AppBarLayout>
+
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
                 android:id="@+id/start_layout"
@@ -34,9 +54,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColorHint="#d1c5c5"
                     android:hint="请输入快递单号"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:textColorHint="#d1c5c5" />
 
                 <ImageView
                     android:id="@+id/camera"
@@ -144,25 +164,17 @@
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
                     android:text="取消" />
-                <LinearLayout
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:background="#d9f1da"
+
+                <Button
+                    android:id="@+id/btn_submit"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content">
-                    <Button
-                        android:id="@+id/btn_submit"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/btn_bg"
-                        android:enabled="false"
-                        android:text="提交" />
-                </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_bg"
+                    android:enabled="false"
+                    android:text="提交" />
             </LinearLayout>
         </RelativeLayout>
-
-
-
-</android.support.design.widget.CoordinatorLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
 </LinearLayout>

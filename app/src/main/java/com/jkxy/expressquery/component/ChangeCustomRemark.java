@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.jkxy.expressquery.R;
-import com.jkxy.expressquery.impl.IDialogButtonClickListener;
+import com.jkxy.expressquery.listener.IDialogButtonClickListener;
 
 /**
  * Created by zh on 2017/3/6.

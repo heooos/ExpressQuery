@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +20,13 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.DetailInfoListAdapter;
-import com.jkxy.expressquery.bean.CacheBean;
-import com.jkxy.expressquery.bean.DetailInfoBean;
-import com.jkxy.expressquery.bean.DetailInfoChildBean;
-import com.jkxy.expressquery.bean.DetailInfoGroupBean;
-import com.jkxy.expressquery.bean.HeadViewInfoBean;
-import com.jkxy.expressquery.bean.JsonRootBean;
+import com.jkxy.expressquery.adapter.DetailInfoListRecAdapter;
+import com.jkxy.expressquery.entity.CacheBean;
+import com.jkxy.expressquery.entity.DetailInfoBean;
+import com.jkxy.expressquery.entity.DetailInfoChildBean;
+import com.jkxy.expressquery.entity.DetailInfoGroupBean;
+import com.jkxy.expressquery.entity.HeadViewInfoBean;
+import com.jkxy.expressquery.entity.JsonRootBean;
 import com.jkxy.expressquery.db.DBUtils;
 import com.jkxy.expressquery.db.GetDate;
 import com.jkxy.expressquery.model.GetDetailDataFromList;
@@ -78,7 +82,17 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
         tvCustomRemark = (TextView) headView.findViewById(R.id.custom_remark);
         tvState = (TextView) headView.findViewById(R.id.state);
         tvSenderPhone = (TextView) headView.findViewById(R.id.sender_phone);
-        mList = (ExpandableListView) findViewById(R.id.detail_list);
+//        mList = (ExpandableListView) findViewById(R.id.detail_list);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     /**
@@ -105,14 +119,20 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
             if (state.equals("2")) {
                 new AsyncGetInfo().execute(code, number);
             } else {
-                Log.d("直接加载", "直接加载");
-                List<DetailInfoBean> list = DBUtils.queryData(DetailInfoActivity.this, eachExpressName);
-                CacheBean cacheBean = GetDetailDataFromList.getMap(list);
-                showList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
-                HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, cacheBean.getPhoneNumber());
-                showDetailInfo(bean);
+                showDataFromDb();
             }
         }
+    }
+
+    //直接从数据库读取数据加载列表
+    private void showDataFromDb() {
+        Log.d("直接加载", "直接加载");
+        List<DetailInfoBean> list = DBUtils.queryData(DetailInfoActivity.this, eachExpressName);
+        CacheBean cacheBean = GetDetailDataFromList.getMap(list);
+//                showList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
+        showNewList(DetailInfoActivity.this, cacheBean.getGroupList(), cacheBean.getDataMap());
+        HeadViewInfoBean bean = new HeadViewInfoBean(number, customRemark, state, cacheBean.getPhoneNumber());
+        showDetailInfo(bean);
     }
 
     @Override
@@ -130,10 +150,10 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
                 currentY = cache;
             } else {
                 currentY = cache;
-                Log.d("测试",firstVisibleItem+"");
-                if (firstVisibleItem != 0){
+                Log.d("测试", firstVisibleItem + "");
+                if (firstVisibleItem != 0) {
                     getSupportActionBar().setTitle(tvCustomRemark.getText().toString());
-                }else {
+                } else {
                     getSupportActionBar().setTitle("快递详情");
                 }
             }
@@ -161,10 +181,8 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
             Log.d("onPostExecute", "查询结束");
             Gson g = new Gson();
             JsonRootBean b = g.fromJson(s, JsonRootBean.class);
-            state = b.getState();
             // TODO: 16/9/24 获取到快递信息
             List<JsonRootBean.Traces> traces = b.getTraces();
-
 
             if (traces.size() == 0) {
                 Toast.makeText(DetailInfoActivity.this, "未查询到快递信息", Toast.LENGTH_SHORT).show();
@@ -187,26 +205,15 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
                             eachExpressName, m.AcceptTime, m.AcceptStation);
                 }
             } else {
-                //来自主界面
-                Log.d("物流数据个数:", traces.size() + "个");
-                //查询数据库个数
-                int count = DBUtils.queryDataCount(DetailInfoActivity.this, eachExpressName);
-                Log.d("数据库数据数量", count + "个");
-                if (!(count == traces.size())) {
-                    // TODO: 2017/2/20 数据有更新  将更新的数据添加到数据库中
-                    for (int i = 0; i < traces.size(); i++) {
-                        if ((i + 1) > count) {
-                            Log.d("快递信息", "时间:"
-                                    + traces.get(i).AcceptTime
-                                    + "\n" + "信息:"
-                                    + traces.get(i).AcceptStation);
-                            DBUtils.addEachInfoToDb(DetailInfoActivity.this,
-                                    eachExpressName,
-                                    traces.get(i).AcceptTime,
-                                    traces.get(i).AcceptStation);
-                        }
-                    }
+                //当快递单号为未签收的时候  查询到最新结果 更新主数据库  删除老物流信息 添加新物流信息
+                DBUtils.updateExpressStateToDb(DetailInfoActivity.this, b.getLogisticCode(), b.getState());
+                DBUtils.deleteEachInfoByNumber(DetailInfoActivity.this, eachExpressName);
+                for (JsonRootBean.Traces m : traces) {
+                    Log.d("快递信息", "时间:" + m.AcceptTime + "\n" + "信息:" + m.AcceptStation);
+                    DBUtils.addEachInfoToDb(DetailInfoActivity.this,
+                            eachExpressName, m.AcceptTime, m.AcceptStation);
                 }
+
             }
             // TODO: 2017/2/20 两个数据库已经创建好   显示物流信息
             List<DetailInfoBean> list = new ArrayList<>();
@@ -220,7 +227,7 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
             }
             //在此处 表示程序完成单号的检查以及查询。返回了查询的结果。
             CacheBean cacheBean = GetDetailDataFromList.getMap(list);
-            showList(DetailInfoActivity.this,
+            showNewList(DetailInfoActivity.this,
                     cacheBean.getGroupList(),
                     cacheBean.getDataMap());
             HeadViewInfoBean bean = new HeadViewInfoBean(number,
@@ -232,27 +239,6 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
         }
     }
 
-    /**
-     * 列表加载
-     */
-    private void showList(Context context, List<DetailInfoGroupBean> groupList, Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap) {
-        Collections.reverse(groupList);
-        adapter = new DetailInfoListAdapter(context, groupList, dataMap);
-        mList.setAdapter(adapter);
-
-        mList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-            @Override
-            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                return true;
-            }
-        });
-        int groupCount = mList.getCount();
-        for (int i = 0; i < groupCount; i++) {
-            mList.expandGroup(i);
-        }
-        mList.addHeaderView(headView);
-        mList.setOnScrollListener(this);
-    }
 
     /**
      * headView显示具体信息
@@ -291,5 +277,15 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
         return view;
     }
 
+    //测试
+    private void showNewList(Context context, List<DetailInfoGroupBean> groupList,
+                             Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap) {
+        Collections.reverse(groupList);
+        RecyclerView ryc = (RecyclerView) findViewById(R.id.ryc);
+        ryc.setLayoutManager(new LinearLayoutManager(this));
+        DetailInfoListRecAdapter adapter = new DetailInfoListRecAdapter(context, groupList, dataMap);
+        ryc.setAdapter(adapter);
+
+    }
 
 }

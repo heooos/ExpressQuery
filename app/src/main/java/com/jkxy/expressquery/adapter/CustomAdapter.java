@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jkxy.expressquery.R;
-import com.jkxy.expressquery.bean.ListInfoBean;
-import com.jkxy.expressquery.impl.IOnRecyclerViewItemClickListener;
-import com.jkxy.expressquery.impl.ISwipeMenuClickListener;
+import com.jkxy.expressquery.entity.ListInfoBean;
+import com.jkxy.expressquery.listener.IOnRecyclerViewItemClickListener;
+import com.jkxy.expressquery.listener.ISwipeMenuClickListener;
 
 import java.util.List;
 import java.util.Objects;

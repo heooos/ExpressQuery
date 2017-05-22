@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,7 +23,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.jkxy.expressquery.Constants;
 import com.jkxy.expressquery.R;
-import com.jkxy.expressquery.bean.ExpressNumberCheckBean;
+import com.jkxy.expressquery.db.DBUtils;
+import com.jkxy.expressquery.entity.ExpressNumberCheckBean;
 import com.jkxy.expressquery.component.SelectPicturePopupWindow;
 import com.jkxy.expressquery.utils.AutoGetNumberUtils;
 import com.jkxy.expressquery.utils.ExpressNumberCheck;
@@ -77,6 +79,15 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
 
         camera = (ImageView) findViewById(R.id.camera);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.addinfo_toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
 
     @Override
@@ -84,22 +95,26 @@ public class AddInfoActivity extends AppCompatActivity implements View.OnClickLi
         switch (view.getId()) {
             case R.id.btn_submit:
                 Log.d("提交", "提交");
-                String code = RegularUtils.parseExpressCode(
-                        ((RadioButton) findViewById(mGroup.getCheckedRadioButtonId()))
-                                .getText().toString());
-                if (code != null) {
-                    Intent intent = new Intent(this, DetailInfoActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("code", code);
-                    bundle.putString("customRemark", "暂无");
-                    bundle.putString("number", number);
-                    bundle.putBoolean("flag", true);
-                    intent.putExtras(bundle);
-                    Toast.makeText(this, code, Toast.LENGTH_SHORT).show();
-                    startActivity(intent);
-                    finish();
+                if (DBUtils.checkNumberExists(this, number)) {
+                    Toast.makeText(this, "单号已存在", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "查询异常", Toast.LENGTH_SHORT).show();
+                    String code = RegularUtils.parseExpressCode(
+                            ((RadioButton) findViewById(mGroup.getCheckedRadioButtonId()))
+                                    .getText().toString());
+                    if (code != null) {
+                        Intent intent = new Intent(this, DetailInfoActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("code", code);
+                        bundle.putString("customRemark", "暂无");
+                        bundle.putString("number", number);
+                        bundle.putBoolean("flag", true);
+                        intent.putExtras(bundle);
+                        Toast.makeText(this, code, Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(this, "查询异常", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             case R.id.btn_check:

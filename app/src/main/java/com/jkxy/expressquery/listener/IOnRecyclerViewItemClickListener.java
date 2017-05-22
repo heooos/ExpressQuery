@@ -1,8 +1,8 @@
-package com.jkxy.expressquery.impl;
+package com.jkxy.expressquery.listener;
 
 import android.view.View;
 
-import com.jkxy.expressquery.bean.ListInfoBean;
+import com.jkxy.expressquery.entity.ListInfoBean;
 
 /**
  * Created by zh on 2017/3/1.

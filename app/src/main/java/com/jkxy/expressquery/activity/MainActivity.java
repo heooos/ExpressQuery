@@ -14,12 +14,12 @@ import android.view.View;
 
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.CustomAdapter;
-import com.jkxy.expressquery.bean.ListInfoBean;
+import com.jkxy.expressquery.entity.ListInfoBean;
 import com.jkxy.expressquery.component.ChangeCustomRemark;
 import com.jkxy.expressquery.db.DBUtils;
-import com.jkxy.expressquery.impl.IDialogButtonClickListener;
-import com.jkxy.expressquery.impl.IOnRecyclerViewItemClickListener;
-import com.jkxy.expressquery.impl.ISwipeMenuClickListener;
+import com.jkxy.expressquery.listener.IDialogButtonClickListener;
+import com.jkxy.expressquery.listener.IOnRecyclerViewItemClickListener;
+import com.jkxy.expressquery.listener.ISwipeMenuClickListener;
 import com.jkxy.expressquery.service.ClipboardListenerService;
 
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(i);
             }
         });
-
+//500454250776
         mAdapter.setOnSwipeMenuClickListener(new ISwipeMenuClickListener() {
             @Override
             public void onSwipeMenuClick(final ListInfoBean bean, int tag, int position) {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         remark.setListener(new IDialogButtonClickListener() {
                             @Override
                             public void onPositiveButtonClicked(String str) {
-                                DBUtils.updateExpressToDb(MainActivity.this,bean.getLogisticCode(),str);
+                                DBUtils.updateExpressCustomRemarkToDb(MainActivity.this, bean.getLogisticCode(), str);
                                 initData();
                                 remark.dismiss();
                             }
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        Toast.makeText(MainActivity.this, "添加到状态栏", Toast.LENGTH_SHORT).show();
 //                        break;
                     case 3:
-                        DBUtils.deleteByLogisticCode(MainActivity.this,bean.getLogisticCode());
+                        DBUtils.deleteByLogisticCode(MainActivity.this, bean.getLogisticCode());
                         initData();
                         break;
                 }
@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
 
 
     /**

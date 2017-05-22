@@ -8,11 +8,11 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.jkxy.expressquery.R;
-import com.jkxy.expressquery.bean.DetailInfoChildBean;
-import com.jkxy.expressquery.bean.DetailInfoGroupBean;
+import com.jkxy.expressquery.entity.DetailInfoChildBean;
+import com.jkxy.expressquery.entity.DetailInfoGroupBean;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +30,12 @@ public class DetailInfoListAdapter extends BaseExpandableListAdapter {
         this.context = context;
         this.groupList = groupList;
         this.newMap = reverseList(dataMap);
+//        this.newMap = dataMap;
+        System.out.println("打印测试数据："+"   共有"+groupList.size()+"组");
     }
 
     private Map<DetailInfoGroupBean, List<DetailInfoChildBean>> reverseList(Map<DetailInfoGroupBean, List<DetailInfoChildBean>> dataMap) {
-        Map<DetailInfoGroupBean, List<DetailInfoChildBean>> map = new HashMap<>();
+        Map<DetailInfoGroupBean, List<DetailInfoChildBean>> map = new LinkedHashMap<>();
         for (int i = 0; i < this.groupList.size(); i++) {
             List<DetailInfoChildBean> list = dataMap.get(groupList.get(i));
             Collections.reverse(list);
