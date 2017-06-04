@@ -21,6 +21,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="editTextStyle">@style/EditTextStyle</item>
     </style>
 
     <style name="CustomToolbarTheme" parent="Base.Widget.AppCompat.Toolbar">
@@ -36,5 +37,13 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style  name="EditTextStyle" parent="android:Widget.EditText">
+        <item name="android:textCursorDrawable">@drawable/jian</item>
+        <item name="android:textSelectHandleLeft">@color/colorPrimary</item>
+        <item name="android:textSelectHandleRight">@color/colorPrimary</item>
+        <item name="android:textSelectHandle">@drawable/jian</item>
+
+    </style >
 
 </resources>

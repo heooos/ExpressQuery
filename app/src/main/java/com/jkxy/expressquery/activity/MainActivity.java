@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -14,9 +15,9 @@ import android.view.View;
 
 import com.jkxy.expressquery.R;
 import com.jkxy.expressquery.adapter.CustomAdapter;
-import com.jkxy.expressquery.entity.ListInfoBean;
 import com.jkxy.expressquery.component.ChangeCustomRemark;
 import com.jkxy.expressquery.db.DBUtils;
+import com.jkxy.expressquery.entity.ListInfoBean;
 import com.jkxy.expressquery.listener.IDialogButtonClickListener;
 import com.jkxy.expressquery.listener.IOnRecyclerViewItemClickListener;
 import com.jkxy.expressquery.listener.ISwipeMenuClickListener;
@@ -48,9 +49,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter = new CustomAdapter(this, mDatas);
         initData();
         mRecyclerView.setAdapter(mAdapter);
-        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+//        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager manager = new GridLayoutManager(this,1);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         initEvent();
     }
 

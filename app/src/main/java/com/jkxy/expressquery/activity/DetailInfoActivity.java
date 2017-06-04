@@ -19,16 +19,15 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.jkxy.expressquery.R;
-import com.jkxy.expressquery.adapter.DetailInfoListAdapter;
 import com.jkxy.expressquery.adapter.DetailInfoListRecAdapter;
+import com.jkxy.expressquery.db.DBUtils;
+import com.jkxy.expressquery.db.GetDate;
 import com.jkxy.expressquery.entity.CacheBean;
 import com.jkxy.expressquery.entity.DetailInfoBean;
 import com.jkxy.expressquery.entity.DetailInfoChildBean;
 import com.jkxy.expressquery.entity.DetailInfoGroupBean;
 import com.jkxy.expressquery.entity.HeadViewInfoBean;
 import com.jkxy.expressquery.entity.JsonRootBean;
-import com.jkxy.expressquery.db.DBUtils;
-import com.jkxy.expressquery.db.GetDate;
 import com.jkxy.expressquery.model.GetDetailDataFromList;
 import com.jkxy.expressquery.model.GetExpressInfo;
 import com.jkxy.expressquery.utils.DateUtils;
@@ -47,7 +46,6 @@ public class DetailInfoActivity extends AppCompatActivity implements AbsListView
     private boolean flag;  //true-- 来自添加   false -- 来自主界面
 
     private ExpandableListView mList;
-    private DetailInfoListAdapter adapter;
 
     private String eachExpressName;
     private TextView tvOrderCode;
